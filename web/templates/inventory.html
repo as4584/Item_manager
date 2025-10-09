@@ -1,0 +1,323 @@
+{% extends "base.html" %}
+
+{% block title %}Inventory - Inventory Manager{% endblock %}
+
+{% block header %}Inventory Management{% endblock %}
+
+{% block content %}
+<!-- Search and Filter Controls -->
+<div class="row mb-3">
+    <div class="col-md-6">
+        <div class="input-group">
+            <span class="input-group-text"><i class="bi bi-search"></i></span>
+            <input type="text" class="form-control" id="searchInput" placeholder="Search by SKU, Name, Category...">
+        </div>
+    </div>
+    <div class="col-md-3">
+        <select class="form-select" id="categoryFilter">
+            <option value="">All Categories</option>
+            <option value="Sneakers">Sneakers</option>
+            <option value="Clothing">Clothing</option>
+            <option value="Accessories">Accessories</option>
+        </select>
+    </div>
+    <div class="col-md-3">
+        <select class="form-select" id="stockFilter">
+            <option value="">All Stock Levels</option>
+            <option value="in-stock">In Stock</option>
+            <option value="low-stock">Low Stock</option>
+            <option value="out-of-stock">Out of Stock</option>
+        </select>
+    </div>
+</div>
+
+<!-- Inventory Summary -->
+<div class="row mb-3">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body py-2">
+                <div class="row text-center">
+                    <div class="col-md-3">
+                        <small class="text-muted">Total Items:</small>
+                        <strong id="totalItems">{{ inventory|length }}</strong>
+                    </div>
+                    <div class="col-md-3">
+                        <small class="text-muted">In Stock:</small>
+                        <strong class="text-success" id="inStockItems">
+                            {{ inventory|selectattr('QtyOnHand', '>', 0)|list|length }}
+                        </strong>
+                    </div>
+                    <div class="col-md-3">
+                        <small class="text-muted">Low Stock:</small>
+                        <strong class="text-warning" id="lowStockItems">
+                            {{ inventory|selectattr('QtyOnHand', '<=', 5)|selectattr('QtyOnHand', '>', 0)|list|length }}
+                        </strong>
+                    </div>
+                    <div class="col-md-3">
+                        <small class="text-muted">Out of Stock:</small>
+                        <strong class="text-danger" id="outOfStockItems">
+                            {{ inventory|selectattr('QtyOnHand', '==', 0)|list|length }}
+                        </strong>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Inventory Table -->
+<div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="card-title mb-0">
+            <i class="bi bi-table"></i> Inventory Items
+        </h5>
+        <div>
+            <button class="btn btn-outline-secondary btn-sm" onclick="exportInventory()">
+                <i class="bi bi-download"></i> Export CSV
+            </button>
+            <button class="btn btn-outline-primary btn-sm" onclick="syncInventory()">
+                <i class="bi bi-arrow-repeat"></i> Refresh
+            </button>
+        </div>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0" id="inventoryTable">
+                <thead class="table-light">
+                    <tr>
+                        <th class="sortable" data-column="SKU">
+                            SKU <i class="bi bi-arrow-up-down"></i>
+                        </th>
+                        <th class="sortable" data-column="Name">
+                            Name <i class="bi bi-arrow-up-down"></i>
+                        </th>
+                        <th class="sortable" data-column="Category">
+                            Category <i class="bi bi-arrow-up-down"></i>
+                        </th>
+                        <th class="sortable" data-column="Color">
+                            Color <i class="bi bi-arrow-up-down"></i>
+                        </th>
+                        <th class="sortable" data-column="Size">
+                            Size <i class="bi bi-arrow-up-down"></i>
+                        </th>
+                        <th class="sortable" data-column="RetailPrice">
+                            Price <i class="bi bi-arrow-up-down"></i>
+                        </th>
+                        <th class="sortable" data-column="QtyOnHand">
+                            On Hand <i class="bi bi-arrow-up-down"></i>
+                        </th>
+                        <th class="sortable" data-column="QtySold">
+                            Sold <i class="bi bi-arrow-up-down"></i>
+                        </th>
+                        <th class="sortable" data-column="Location">
+                            Location <i class="bi bi-arrow-up-down"></i>
+                        </th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in inventory %}
+                    <tr data-sku="{{ item.SKU }}" data-category="{{ item.Category }}" data-qty="{{ item.QtyOnHand }}">
+                        <td>
+                            <strong>{{ item.SKU }}</strong>
+                            {% if item.Barcode %}
+                            <br><small class="text-muted">{{ item.Barcode }}</small>
+                            {% endif %}
+                        </td>
+                        <td>{{ item.Name }}</td>
+                        <td>
+                            <span class="badge bg-secondary">{{ item.Category }}</span>
+                        </td>
+                        <td>{{ item.Color }}</td>
+                        <td>{{ item.Size }}</td>
+                        <td>${{ "%.2f"|format(item.RetailPrice) }}</td>
+                        <td>
+                            <span class="badge {% if item.QtyOnHand == 0 %}bg-danger{% elif item.QtyOnHand <= 5 %}bg-warning{% else %}bg-success{% endif %}">
+                                {{ item.QtyOnHand }}
+                            </span>
+                        </td>
+                        <td>{{ item.QtySold or 0 }}</td>
+                        <td>{{ item.Location }}</td>
+                        <td>
+                            {% if item.QtyOnHand == 0 %}
+                                <span class="badge bg-danger">Out of Stock</span>
+                            {% elif item.QtyOnHand <= 5 %}
+                                <span class="badge bg-warning">Low Stock</span>
+                            {% else %}
+                                <span class="badge bg-success">In Stock</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="card-footer">
+        <div class="d-flex justify-content-between align-items-center">
+            <small class="text-muted">
+                Showing <span id="visibleRows">{{ inventory|length }}</span> of {{ inventory|length }} items
+            </small>
+            <small class="text-muted">
+                Last updated: {{ inventory[0].LastUpdated if inventory else 'Never' }}
+            </small>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    let sortDirection = {};
+    
+    // Search functionality
+    document.getElementById('searchInput').addEventListener('input', filterTable);
+    document.getElementById('categoryFilter').addEventListener('change', filterTable);
+    document.getElementById('stockFilter').addEventListener('change', filterTable);
+    
+    // Sort functionality
+    document.querySelectorAll('.sortable').forEach(header => {
+        header.addEventListener('click', function() {
+            const column = this.dataset.column;
+            sortTable(column);
+        });
+        header.style.cursor = 'pointer';
+    });
+    
+    function filterTable() {
+        const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+        const categoryFilter = document.getElementById('categoryFilter').value;
+        const stockFilter = document.getElementById('stockFilter').value;
+        
+        const rows = document.querySelectorAll('#inventoryTable tbody tr');
+        let visibleCount = 0;
+        
+        rows.forEach(row => {
+            const sku = row.querySelector('td:nth-child(1)').textContent.toLowerCase();
+            const name = row.querySelector('td:nth-child(2)').textContent.toLowerCase();
+            const category = row.dataset.category;
+            const qty = parseInt(row.dataset.qty);
+            
+            let showRow = true;
+            
+            // Text search
+            if (searchTerm && !sku.includes(searchTerm) && !name.includes(searchTerm) && !category.toLowerCase().includes(searchTerm)) {
+                showRow = false;
+            }
+            
+            // Category filter
+            if (categoryFilter && category !== categoryFilter) {
+                showRow = false;
+            }
+            
+            // Stock filter
+            if (stockFilter) {
+                if (stockFilter === 'in-stock' && qty <= 5) showRow = false;
+                if (stockFilter === 'low-stock' && (qty === 0 || qty > 5)) showRow = false;
+                if (stockFilter === 'out-of-stock' && qty !== 0) showRow = false;
+            }
+            
+            row.style.display = showRow ? '' : 'none';
+            if (showRow) visibleCount++;
+        });
+        
+        document.getElementById('visibleRows').textContent = visibleCount;
+    }
+    
+    function sortTable(column) {
+        const tbody = document.querySelector('#inventoryTable tbody');
+        const rows = Array.from(tbody.querySelectorAll('tr'));
+        
+        // Toggle sort direction
+        sortDirection[column] = sortDirection[column] === 'asc' ? 'desc' : 'asc';
+        
+        // Get column index
+        const headers = document.querySelectorAll('#inventoryTable th');
+        let columnIndex = -1;
+        headers.forEach((header, index) => {
+            if (header.dataset.column === column) {
+                columnIndex = index;
+            }
+        });
+        
+        if (columnIndex === -1) return;
+        
+        // Sort rows
+        rows.sort((a, b) => {
+            let aVal = a.querySelector(`td:nth-child(${columnIndex + 1})`).textContent.trim();
+            let bVal = b.querySelector(`td:nth-child(${columnIndex + 1})`).textContent.trim();
+            
+            // Handle numeric columns
+            if (['RetailPrice', 'QtyOnHand', 'QtySold'].includes(column)) {
+                aVal = parseFloat(aVal.replace(/[$,]/g, '')) || 0;
+                bVal = parseFloat(bVal.replace(/[$,]/g, '')) || 0;
+            }
+            
+            if (sortDirection[column] === 'asc') {
+                return aVal > bVal ? 1 : -1;
+            } else {
+                return aVal < bVal ? 1 : -1;
+            }
+        });
+        
+        // Update table
+        rows.forEach(row => tbody.appendChild(row));
+        
+        // Update sort indicators
+        document.querySelectorAll('.sortable i').forEach(icon => {
+            icon.className = 'bi bi-arrow-up-down';
+        });
+        
+        const currentHeader = document.querySelector(`[data-column="${column}"] i`);
+        if (sortDirection[column] === 'asc') {
+            currentHeader.className = 'bi bi-arrow-up';
+        } else {
+            currentHeader.className = 'bi bi-arrow-down';
+        }
+    }
+    
+    function exportInventory() {
+        showAlert('Exporting inventory data...', 'info');
+        
+        // Create CSV content
+        const table = document.getElementById('inventoryTable');
+        const rows = table.querySelectorAll('tr:not([style*="display: none"])');
+        let csv = [];
+        
+        // Headers
+        const headers = [];
+        rows[0].querySelectorAll('th').forEach((th, index) => {
+            if (index < 9) { // Exclude status column
+                headers.push(th.textContent.replace(/\s+/g, ' ').trim().split(' ')[0]);
+            }
+        });
+        csv.push(headers.join(','));
+        
+        // Data rows
+        for (let i = 1; i < rows.length; i++) {
+            const row = [];
+            rows[i].querySelectorAll('td').forEach((td, index) => {
+                if (index < 9) { // Exclude status column
+                    let cellData = td.textContent.replace(/\s+/g, ' ').trim();
+                    // Handle multiline cells (SKU with barcode)
+                    cellData = cellData.split('\n')[0] || cellData;
+                    row.push(`"${cellData}"`);
+                }
+            });
+            csv.push(row.join(','));
+        }
+        
+        // Download CSV
+        const csvContent = csv.join('\n');
+        const blob = new Blob([csvContent], { type: 'text/csv' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `inventory_${new Date().toISOString().split('T')[0]}.csv`;
+        a.click();
+        window.URL.revokeObjectURL(url);
+        
+        showAlert('Inventory exported successfully!', 'success');
+    }
+</script>
+{% endblock %}
