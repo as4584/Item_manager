@@ -11,6 +11,14 @@ import pandas as pd
 # Load environment variables
 load_dotenv()
 
+# Import version info
+try:
+    from __version__ import __version__, get_version
+except ImportError:
+    __version__ = "1.0.0"
+    def get_version():
+        return __version__
+
 app = Flask(__name__, template_folder='web/templates')
 app.secret_key = os.getenv('SECRET_KEY', 'dev-key-change-in-production')
 
@@ -144,6 +152,25 @@ def sales_endpoint() -> Dict[str, Any]:
         })
     except Exception as e:
         return jsonify({'status': 'error', 'message': str(e)}), 500
+
+
+@app.route('/version')
+def version() -> Dict[str, str]:
+    """Return application version information."""
+    return jsonify({
+        'version': get_version(),
+        'name': 'Self-Managing Inventory Manager',
+        'python': os.sys.version.split()[0]
+    })
+
+
+@app.route('/health')
+def health() -> Dict[str, str]:
+    """Health check endpoint for monitoring."""
+    return jsonify({
+        'status': 'healthy',
+        'version': get_version()
+    })
 
 
 if __name__ == '__main__':
