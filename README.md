@@ -1,53 +1,125 @@
-# Self-Managing Inventory Manager
+# 🖤 DonXEra Inventory Manager
 
-A **Self-Managing Inventory Manager** for sneaker/clothing shops that automatically syncs with Lightspeed Retail X-Series POS and manages inventory data in Google Sheets.
+A minimalist inventory management system for sneaker and streetwear shops. Clean design, powerful features, easy to use.
 
-## 🎯 Project Purpose
+---
 
-This application provides automated inventory management with:
-- **Real-time sync** with Lightspeed Retail X-Series API
-- **Google Sheets** as the source of truth for daily operations
-- **Automated scheduling** for hourly sync and nightly maintenance
-- **Web dashboard** for inventory monitoring and management
-- **Low stock alerts** and restock recommendations
-- **CSV import/export** capabilities for manual data management
+## 🚀 Quick Start (Docker) - **RECOMMENDED**
 
-## 🏗️ Architecture
+**Run the demo with one command:**
 
-- **Backend**: Python 3.11 + Flask
-- **Data Processing**: Pandas for data manipulation
-- **POS Integration**: Lightspeed X-Series API with pagination & rate limiting
-- **Data Storage**: Google Sheets via gspread
-- **Scheduling**: APScheduler for background jobs
-- **Frontend**: Bootstrap 5 with responsive design
-- **Testing**: pytest with comprehensive test coverage
+```bash
+docker run -p 8080:8080 donxera-inventory
+```
+
+Then open: **http://localhost:8080**
+
+### Build from Source
+
+```bash
+# 1. Build the image
+docker build -t donxera-inventory .
+
+# 2. Run the container
+docker run -p 8080:8080 donxera-inventory
+
+# Or use the build script
+chmod +x docker-build.sh
+./docker-build.sh
+```
+
+📖 **See [DOCKER_README.md](DOCKER_README.md) for complete Docker documentation**
+
+---
+
+## 💻 Manual Setup (Without Docker)
+
+### Prerequisites
+- Python 3.11+
+- pip
+
+### Installation
+
+```bash
+# 1. Install dependencies
+pip install -r requirements.txt
+
+# 2. Run in demo mode
+DEMO_MODE=true PORT=8080 python3 app.py
+
+# 3. Open browser
+# Navigate to http://localhost:8080
+```
+
+---
+
+## 🎯 Features
+
+### Current Implementation
+- ✅ **Dashboard** - Real-time inventory overview
+- ✅ **Inventory Management** - Search, filter, sort products
+- ✅ **Low Stock Alerts** - Automated restock notifications
+- ✅ **Demo Mode** - 60 pre-loaded streetwear products
+- ✅ **CSV Import/Export** - Bulk data operations
+- ✅ **Responsive Design** - Mobile & desktop friendly
+- ✅ **Minimalist UI** - Clean, professional interface
+
+### Planned Features
+- 🔄 **Lightspeed X-Series Integration** - Real-time POS sync
+- 🔄 **Google Sheets Backend** - Cloud-based data storage
+- 🔄 **Automated Scheduling** - Hourly sync, nightly backups
+- 🔄 **Webhook Support** - Real-time inventory updates
+
+---
+
+## 🎨 Demo Data
+
+**60 Products Included:**
+- **Hellstar** - Hoodies, tees ($85-$195)
+- **Denim Tears** - Hoodies, jeans, tees ($95-$320)
+- **Bape** - Shark hoodies, graphic tees ($110-$450)
+- **Graphic Tees** - Miami Vice, Ocean Drive ($38-$45)
+- **Sneakers** - Travis Scott, Yeezys, Dunks, New Balance ($90-$850)
+- **Accessories** - Masks, hats, sunglasses, jewelry ($35-$280)
+
+**Stock Levels:**
+- 334 items in stock
+- 36 items need restocking
+- 60 unique product codes
+
+---
 
 ## 📁 Project Structure
 
 ```
 inventory_manager/
-├── app.py                          # Main Flask application
-├── requirements.txt                # Python dependencies
-├── .env.example                    # Environment variables template
-├── README.md                       # This file
-├── services/                       # Business logic services
-│   ├── ls_api.py                  # Lightspeed X-Series API integration
-│   ├── ls_auth.py                 # Authentication & token management
-│   ├── sheets.py                  # Google Sheets operations
-│   ├── inventory.py               # Inventory business logic
-│   ├── csv_ingest.py              # CSV processing & validation
-│   └── ls_webhooks.py             # Webhook handling (optional)
-├── web/templates/                  # HTML templates
-│   ├── base.html                  # Base template with Bootstrap
-│   ├── index.html                 # Dashboard
-│   ├── inventory.html             # Inventory management
-│   └── low_stock.html             # Low stock alerts
-├── jobs/                          # Background job scheduling
-│   └── scheduler.py               # APScheduler configuration
-├── sample_data/                   # Sample CSV files
-│   ├── products.csv               # Sample product data
-│   └── sales.csv                  # Sample sales data
-├── tests/                         # Test suite
+├── app.py                    # Main Flask application
+├── demo_data.py             # Demo data loader
+├── Dockerfile               # Docker configuration
+├── .dockerignore            # Docker build exclusions
+├── docker-build.sh          # Docker build script
+├── DOCKER_README.md         # Complete Docker guide
+├── requirements.txt         # Python dependencies
+├── templates/               # HTML templates
+│   ├── base.html           # Base layout
+│   ├── index.html          # Dashboard
+│   ├── inventory.html      # Full inventory view
+│   └── low_stock.html      # Low stock alerts
+├── static/                  # CSS & JavaScript
+│   ├── style.css           # Minimalist design
+│   └── app.js              # Frontend logic
+├── sample_data/            # Demo CSV files
+│   └── products.csv        # 60 streetwear products
+├── ls_api.py              # Lightspeed API (future)
+├── ls_auth.py             # Authentication (future)
+├── sheets.py              # Google Sheets (future)
+├── inventory.py           # Business logic (future)
+└── scheduler.py           # Background jobs (future)
+```
+
+---
+
+## 🛠️ Configuration
 │   ├── conftest.py                # Test configuration & fixtures
 │   ├── test_inventory.py          # Inventory logic tests
 │   ├── test_csv_ingest.py         # CSV processing tests

@@ -1,8 +1,10 @@
 {% extends "base.html" %}
 
-{% block title %}Dashboard - Inventory Manager{% endblock %}
+{% block title %}Dashboard - DonXEra{% endblock %}
 
 {% block header %}Dashboard{% endblock %}
+
+{% block subtitle %}Overview of your inventory{% endblock %}
 
 {% block content %}
 <!-- Metrics Cards -->
@@ -10,15 +12,12 @@
     <div class="col-md-3 mb-3">
         <div class="card metric-card h-100">
             <div class="card-body">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <h6 class="card-subtitle mb-2 text-muted">Total SKUs</h6>
-                        <h3 class="card-title mb-0 text-primary">{{ total_skus or 0 }}</h3>
-                    </div>
-                    <div class="text-primary">
-                        <i class="bi bi-grid-3x3-gap fs-2"></i>
-                    </div>
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <h6 class="card-subtitle">Product Types</h6>
+                    <i class="bi bi-box text-secondary"></i>
                 </div>
+                <h3 class="card-title mb-0">{{ total_skus or 0 }}</h3>
+                <small class="text-muted">Different items</small>
             </div>
         </div>
     </div>
@@ -26,34 +25,28 @@
     <div class="col-md-3 mb-3">
         <div class="card metric-card h-100">
             <div class="card-body">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <h6 class="card-subtitle mb-2 text-muted">Total On Hand</h6>
-                        <h3 class="card-title mb-0 text-success">{{ total_on_hand or 0 }}</h3>
-                    </div>
-                    <div class="text-success">
-                        <i class="bi bi-boxes fs-2"></i>
-                    </div>
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <h6 class="card-subtitle">Items in Stock</h6>
+                    <i class="bi bi-boxes text-secondary"></i>
                 </div>
+                <h3 class="card-title mb-0">{{ total_on_hand or 0 }}</h3>
+                <small class="text-muted">Total units</small>
             </div>
         </div>
     </div>
     
     <div class="col-md-3 mb-3">
-        <div class="card metric-card low-stock h-100">
+        <div class="card metric-card h-100">
             <div class="card-body">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <h6 class="card-subtitle mb-2 text-muted">Low Stock Items</h6>
-                        <h3 class="card-title mb-0 text-danger">{{ low_stock_count or 0 }}</h3>
-                    </div>
-                    <div class="text-danger">
-                        <i class="bi bi-exclamation-triangle fs-2"></i>
-                    </div>
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <h6 class="card-subtitle">Low Stock</h6>
+                    <i class="bi bi-exclamation-circle text-secondary"></i>
                 </div>
-                <div class="mt-2">
-                    <a href="{{ url_for('low_stock') }}" class="btn btn-outline-danger btn-sm">
-                        <i class="bi bi-eye"></i> View Details
+                <h3 class="card-title mb-0">{{ low_stock_count or 0 }}</h3>
+                <small class="text-muted">Need restock</small>
+                <div class="mt-3">
+                    <a href="{{ url_for('low_stock') }}" class="btn btn-sm btn-outline-primary w-100">
+                        View Details
                     </a>
                 </div>
             </div>
@@ -63,19 +56,17 @@
     <div class="col-md-3 mb-3">
         <div class="card metric-card h-100">
             <div class="card-body">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <h6 class="card-subtitle mb-2 text-muted">Last Sync</h6>
-                        <p class="card-text small mb-0">{{ last_sync or 'Never' }}</p>
-                    </div>
-                    <div class="text-info">
-                        <i class="bi bi-arrow-repeat fs-2"></i>
-                    </div>
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <h6 class="card-subtitle">Actions</h6>
+                    <i class="bi bi-lightning-charge text-secondary"></i>
                 </div>
-                <div class="mt-2">
-                    <button class="btn btn-outline-info btn-sm" onclick="syncInventory()">
-                        <i class="bi bi-arrow-repeat"></i> Sync Now
-                    </button>
+                <p class="mb-3 small text-muted">Quick tools</p>
+                <button class="btn btn-sm btn-primary w-100 mb-2" onclick="syncInventory()">
+                    Sync Now
+                </button>
+                <button class="btn btn-sm btn-outline-primary w-100" data-bs-toggle="modal" data-bs-target="#uploadModal">
+                    Upload CSV
+                </button>
                 </div>
             </div>
         </div>
