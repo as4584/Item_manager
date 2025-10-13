@@ -131,7 +131,7 @@ jobs:
     if: always()
     steps:
     - name: Download all reports
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v5
       continue-on-error: true
     
     - name: Generate security summary
