@@ -40,4 +40,4 @@ chardet==5.2.0
 simplejson==3.19.2
 
 # Security
-cryptography==41.0.8
+cryptography==46.0.2
