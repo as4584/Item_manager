@@ -1,51 +1,61 @@
 ItemID,SKU,Name,Category,Color,Size,Barcode,RetailPrice,QtyOnHand,QtySold,Location,LastUpdated
-1001,JD1-BLK-8,Air Jordan 1 Black,Sneakers,Black,8,123456780,170.00,12,8,A1,2025-10-09 12:00:00
-1002,JD1-BLK-9,Air Jordan 1 Black,Sneakers,Black,9,123456781,170.00,15,12,A1,2025-10-09 12:00:00
-1003,JD1-BLK-10,Air Jordan 1 Black,Sneakers,Black,10,123456782,170.00,8,22,A1,2025-10-09 12:00:00
-1004,JD1-BLK-11,Air Jordan 1 Black,Sneakers,Black,11,123456783,170.00,6,18,A1,2025-10-09 12:00:00
-1005,JD1-BLK-12,Air Jordan 1 Black,Sneakers,Black,12,123456784,170.00,4,15,A1,2025-10-09 12:00:00
-1006,JD1-WHT-8,Air Jordan 1 White,Sneakers,White,8,123456790,170.00,10,6,A2,2025-10-09 12:00:00
-1007,JD1-WHT-9,Air Jordan 1 White,Sneakers,White,9,123456791,170.00,3,17,A2,2025-10-09 12:00:00
-1008,JD1-WHT-10,Air Jordan 1 White,Sneakers,White,10,123456792,170.00,2,25,A2,2025-10-09 12:00:00
-1009,JD1-WHT-11,Air Jordan 1 White,Sneakers,White,11,123456793,170.00,7,13,A2,2025-10-09 12:00:00
-1010,JD1-WHT-12,Air Jordan 1 White,Sneakers,White,12,123456794,170.00,1,8,A2,2025-10-09 12:00:00
-1011,AF1-WHT-8,Air Force 1 White,Sneakers,White,8,234567801,110.00,20,30,B1,2025-10-09 12:00:00
-1012,AF1-WHT-9,Air Force 1 White,Sneakers,White,9,234567802,110.00,18,35,B1,2025-10-09 12:00:00
-1013,AF1-WHT-10,Air Force 1 White,Sneakers,White,10,234567803,110.00,25,28,B1,2025-10-09 12:00:00
-1014,AF1-WHT-11,Air Force 1 White,Sneakers,White,11,234567804,110.00,22,20,B1,2025-10-09 12:00:00
-1015,AF1-BLK-8,Air Force 1 Black,Sneakers,Black,8,234567811,110.00,15,25,B2,2025-10-09 12:00:00
-1016,AF1-BLK-9,Air Force 1 Black,Sneakers,Black,9,234567812,110.00,12,32,B2,2025-10-09 12:00:00
-1017,AF1-BLK-10,Air Force 1 Black,Sneakers,Black,10,234567813,110.00,8,40,B2,2025-10-09 12:00:00
-1018,AF1-BLK-11,Air Force 1 Black,Sneakers,Black,11,234567814,110.00,0,45,B2,2025-10-09 12:00:00
-1019,YZY-350-8,Yeezy 350 Boost,Sneakers,Cream,8,345678821,220.00,5,12,C1,2025-10-09 12:00:00
-1020,YZY-350-9,Yeezy 350 Boost,Sneakers,Cream,9,345678822,220.00,3,18,C1,2025-10-09 12:00:00
-1021,YZY-350-10,Yeezy 350 Boost,Sneakers,Cream,10,345678823,220.00,2,22,C1,2025-10-09 12:00:00
-1022,YZY-350-11,Yeezy 350 Boost,Sneakers,Cream,11,345678824,220.00,1,15,C1,2025-10-09 12:00:00
-1023,NB-550-8,New Balance 550,Sneakers,White,8,456789831,120.00,14,8,D1,2025-10-09 12:00:00
-1024,NB-550-9,New Balance 550,Sneakers,White,9,456789832,120.00,16,12,D1,2025-10-09 12:00:00
-1025,NB-550-10,New Balance 550,Sneakers,White,10,456789833,120.00,18,10,D1,2025-10-09 12:00:00
-1026,NB-550-11,New Balance 550,Sneakers,White,11,456789834,120.00,11,7,D1,2025-10-09 12:00:00
-1027,HOODIE-BLK-S,Supreme Box Logo Hoodie,Clothing,Black,S,567890841,350.00,8,15,E1,2025-10-09 12:00:00
-1028,HOODIE-BLK-M,Supreme Box Logo Hoodie,Clothing,Black,M,567890842,350.00,12,22,E1,2025-10-09 12:00:00
-1029,HOODIE-BLK-L,Supreme Box Logo Hoodie,Clothing,Black,L,567890843,350.00,6,28,E1,2025-10-09 12:00:00
-1030,HOODIE-BLK-XL,Supreme Box Logo Hoodie,Clothing,Black,XL,567890844,350.00,4,18,E1,2025-10-09 12:00:00
-1031,HOODIE-GRY-S,Supreme Box Logo Hoodie,Clothing,Gray,S,567890851,350.00,5,12,E2,2025-10-09 12:00:00
-1032,HOODIE-GRY-M,Supreme Box Logo Hoodie,Clothing,Gray,M,567890852,350.00,7,20,E2,2025-10-09 12:00:00
-1033,HOODIE-GRY-L,Supreme Box Logo Hoodie,Clothing,Gray,L,567890853,350.00,3,25,E2,2025-10-09 12:00:00
-1034,HOODIE-GRY-XL,Supreme Box Logo Hoodie,Clothing,Gray,XL,567890854,350.00,2,15,E2,2025-10-09 12:00:00
-1035,TEE-WHT-S,Off-White Arrows Tee,Clothing,White,S,678901861,180.00,20,35,F1,2025-10-09 12:00:00
-1036,TEE-WHT-M,Off-White Arrows Tee,Clothing,White,M,678901862,180.00,25,42,F1,2025-10-09 12:00:00
-1037,TEE-WHT-L,Off-White Arrows Tee,Clothing,White,L,678901863,180.00,18,38,F1,2025-10-09 12:00:00
-1038,TEE-WHT-XL,Off-White Arrows Tee,Clothing,White,XL,678901864,180.00,12,25,F1,2025-10-09 12:00:00
-1039,TEE-BLK-S,Off-White Arrows Tee,Clothing,Black,S,678901871,180.00,15,28,F2,2025-10-09 12:00:00
-1040,TEE-BLK-M,Off-White Arrows Tee,Clothing,Black,M,678901872,180.00,22,45,F2,2025-10-09 12:00:00
-1041,TEE-BLK-L,Off-White Arrows Tee,Clothing,Black,L,678901873,180.00,8,40,F2,2025-10-09 12:00:00
-1042,TEE-BLK-XL,Off-White Arrows Tee,Clothing,Black,XL,678901874,180.00,5,32,F2,2025-10-09 12:00:00
-1043,CAP-BLK-OS,Stone Island Cap,Accessories,Black,OS,789012881,95.00,12,18,G1,2025-10-09 12:00:00
-1044,CAP-WHT-OS,Stone Island Cap,Accessories,White,OS,789012882,95.00,8,22,G1,2025-10-09 12:00:00
-1045,CAP-NVY-OS,Stone Island Cap,Accessories,Navy,OS,789012883,95.00,6,15,G1,2025-10-09 12:00:00
-1046,BAG-BLK-OS,Louis Vuitton Keepall,Accessories,Black,OS,890123891,1250.00,3,8,H1,2025-10-09 12:00:00
-1047,BAG-BRN-OS,Louis Vuitton Keepall,Accessories,Brown,OS,890123892,1250.00,2,12,H1,2025-10-09 12:00:00
-1048,WATCH-SLV-OS,Rolex Submariner,Accessories,Silver,OS,901234901,8500.00,1,3,H2,2025-10-09 12:00:00
-1049,SOCKS-WHT-OS,Nike Elite Socks,Accessories,White,OS,012345911,25.00,50,120,I1,2025-10-09 12:00:00
-1050,SOCKS-BLK-OS,Nike Elite Socks,Accessories,Black,OS,012345912,25.00,45,135,I1,2025-10-09 12:00:00
+1,HS-001-M,Hellstar Flame Hoodie,Clothing,Black,M,7001234567890,180.00,3,12,Rack A-1,2025-10-12
+2,HS-001-L,Hellstar Flame Hoodie,Clothing,Black,L,7001234567891,180.00,2,18,Rack A-1,2025-10-12
+3,HS-001-XL,Hellstar Flame Hoodie,Clothing,Black,XL,7001234567892,180.00,1,25,Rack A-1,2025-10-12
+4,HS-002-M,Hellstar Racing Tee,Clothing,White,M,7001234567893,85.00,8,15,Rack A-2,2025-10-12
+5,HS-002-L,Hellstar Racing Tee,Clothing,White,L,7001234567894,85.00,6,22,Rack A-2,2025-10-12
+6,HS-002-XL,Hellstar Racing Tee,Clothing,White,XL,7001234567895,85.00,4,18,Rack A-2,2025-10-12
+7,HS-003-M,Hellstar Logo Hoodie,Clothing,Navy,M,7001234567896,195.00,2,10,Rack A-1,2025-10-12
+8,HS-003-L,Hellstar Logo Hoodie,Clothing,Navy,L,7001234567897,195.00,0,14,Rack A-1,2025-10-12
+9,DT-001-M,Denim Tears Cotton Wreath Hoodie,Clothing,Brown,M,7002234567890,250.00,1,8,Rack B-1,2025-10-12
+10,DT-001-L,Denim Tears Cotton Wreath Hoodie,Clothing,Brown,L,7002234567891,250.00,0,12,Rack B-1,2025-10-12
+11,DT-002-M,Denim Tears Carpenter Jeans,Clothing,Light Blue,32,7002234567892,320.00,2,6,Rack B-2,2025-10-12
+12,DT-002-L,Denim Tears Carpenter Jeans,Clothing,Light Blue,34,7002234567893,320.00,3,5,Rack B-2,2025-10-12
+13,DT-003-M,Denim Tears Logo Tee,Clothing,Black,M,7002234567894,95.00,7,20,Rack B-3,2025-10-12
+14,DT-003-L,Denim Tears Logo Tee,Clothing,Black,L,7002234567895,95.00,5,25,Rack B-3,2025-10-12
+15,DT-004-M,Denim Tears Logo Tee,Clothing,White,M,7002234567896,95.00,4,18,Rack B-3,2025-10-12
+16,DT-004-L,Denim Tears Logo Tee,Clothing,White,L,7002234567897,95.00,2,22,Rack B-3,2025-10-12
+17,GT-001-M,Miami Heat Vice Graphic Tee,Clothing,Pink/Blue,M,7003234567890,45.00,12,35,Rack C-1,2025-10-12
+18,GT-001-L,Miami Heat Vice Graphic Tee,Clothing,Pink/Blue,L,7003234567891,45.00,15,30,Rack C-1,2025-10-12
+19,GT-002-M,Palm Tree Sunset Graphic Tee,Clothing,Orange,M,7003234567892,40.00,10,28,Rack C-1,2025-10-12
+20,GT-002-L,Palm Tree Sunset Graphic Tee,Clothing,Orange,L,7003234567893,40.00,8,32,Rack C-1,2025-10-12
+21,GT-003-M,Ocean Drive Vintage Tee,Clothing,Teal,M,7003234567894,42.00,9,22,Rack C-2,2025-10-12
+22,GT-003-L,Ocean Drive Vintage Tee,Clothing,Teal,L,7003234567895,42.00,11,25,Rack C-2,2025-10-12
+23,GT-004-M,South Beach Graphic Tee,Clothing,Yellow,M,7003234567896,38.00,14,40,Rack C-2,2025-10-12
+24,GT-004-L,South Beach Graphic Tee,Clothing,Yellow,L,7003234567897,38.00,16,38,Rack C-2,2025-10-12
+25,BP-001-M,Bape Shark Hoodie,Clothing,Green Camo,M,7004234567890,450.00,1,5,Rack D-1,2025-10-12
+26,BP-001-L,Bape Shark Hoodie,Clothing,Green Camo,L,7004234567891,450.00,0,7,Rack D-1,2025-10-12
+27,BP-002-M,Bape Ape Head Tee,Clothing,White,M,7004234567892,120.00,4,15,Rack D-2,2025-10-12
+28,BP-002-L,Bape Ape Head Tee,Clothing,White,L,7004234567893,120.00,3,18,Rack D-2,2025-10-12
+29,BP-003-M,Bape ABC Camo Tee,Clothing,Blue Camo,M,7004234567894,125.00,5,12,Rack D-2,2025-10-12
+30,BP-003-L,Bape ABC Camo Tee,Clothing,Blue Camo,L,7004234567895,125.00,2,16,Rack D-2,2025-10-12
+31,BP-004-M,Bape Baby Milo Tee,Clothing,Pink,M,7004234567896,110.00,6,20,Rack D-3,2025-10-12
+32,BP-004-L,Bape Baby Milo Tee,Clothing,Pink,L,7004234567897,110.00,8,18,Rack D-3,2025-10-12
+33,TR-001-9,Travis Scott Jordan 1 Low,Sneakers,Brown/Pink,9,8001234567890,850.00,1,3,Shelf 1-A,2025-10-12
+34,TR-001-10,Travis Scott Jordan 1 Low,Sneakers,Brown/Pink,10,8001234567891,850.00,0,5,Shelf 1-A,2025-10-12
+35,TR-001-11,Travis Scott Jordan 1 Low,Sneakers,Brown/Pink,11,8001234567892,850.00,2,4,Shelf 1-A,2025-10-12
+36,DK-001-9,Nike Dunk Low Panda,Sneakers,Black/White,9,8002234567890,130.00,8,25,Shelf 1-B,2025-10-12
+37,DK-001-10,Nike Dunk Low Panda,Sneakers,Black/White,10,8002234567891,130.00,12,28,Shelf 1-B,2025-10-12
+38,DK-001-11,Nike Dunk Low Panda,Sneakers,Black/White,11,8002234567892,130.00,10,30,Shelf 1-B,2025-10-12
+39,YZ-001-9,Yeezy Slide Bone,Sneakers,Bone,9,8003234567890,90.00,4,18,Shelf 2-A,2025-10-12
+40,YZ-001-10,Yeezy Slide Bone,Sneakers,Bone,10,8003234567891,90.00,3,22,Shelf 2-A,2025-10-12
+41,YZ-002-9,Yeezy Foam Runner Onyx,Sneakers,Black,9,8003234567892,100.00,2,15,Shelf 2-A,2025-10-12
+42,YZ-002-10,Yeezy Foam Runner Onyx,Sneakers,Black,10,8003234567893,100.00,1,20,Shelf 2-A,2025-10-12
+43,NB-001-9,New Balance 550 White Green,Sneakers,White/Green,9,8004234567890,140.00,7,12,Shelf 2-B,2025-10-12
+44,NB-001-10,New Balance 550 White Green,Sneakers,White/Green,10,8004234567891,140.00,9,15,Shelf 2-B,2025-10-12
+45,NB-002-9,New Balance 2002R Protection Pack,Sneakers,Grey,9,8004234567892,180.00,3,8,Shelf 2-B,2025-10-12
+46,NB-002-10,New Balance 2002R Protection Pack,Sneakers,Grey,10,8004234567893,180.00,5,10,Shelf 2-B,2025-10-12
+47,AC-001-OS,Bape Shark Face Mask,Accessories,Black,One Size,9001234567890,55.00,15,45,Bin A-1,2025-10-12
+48,AC-002-OS,Miami Heat Snapback,Accessories,Black,One Size,9001234567891,35.00,20,50,Bin A-2,2025-10-12
+49,AC-003-OS,Chrome Hearts Sunglasses,Accessories,Silver,One Size,9001234567892,280.00,2,6,Display Case,2025-10-12
+50,AC-004-OS,Hellstar Chain Necklace,Accessories,Silver,One Size,9001234567893,75.00,8,18,Display Case,2025-10-12
+51,CR-001-32,Corteiz Cargo Pants,Clothing,Black,32,7005234567890,160.00,4,14,Rack E-1,2025-10-12
+52,CR-001-34,Corteiz Cargo Pants,Clothing,Black,34,7005234567891,160.00,3,16,Rack E-1,2025-10-12
+53,CR-002-M,Corteiz Alcatraz Hoodie,Clothing,Grey,M,7005234567892,175.00,2,12,Rack E-2,2025-10-12
+54,CR-002-L,Corteiz Alcatraz Hoodie,Clothing,Grey,L,7005234567893,175.00,1,15,Rack E-2,2025-10-12
+55,ES-001-M,Essential Fear of God Hoodie,Clothing,Cream,M,7006234567890,95.00,6,22,Rack F-1,2025-10-12
+56,ES-001-L,Essential Fear of God Hoodie,Clothing,Cream,L,7006234567891,95.00,5,25,Rack F-1,2025-10-12
+57,ES-002-M,Essential Fear of God Tee,Clothing,Black,M,7006234567892,48.00,10,30,Rack F-2,2025-10-12
+58,ES-002-L,Essential Fear of God Tee,Clothing,Black,L,7006234567893,48.00,12,28,Rack F-2,2025-10-12
+59,SP-001-M,Sp5der Web Hoodie,Clothing,Pink,M,7007234567890,165.00,3,10,Rack G-1,2025-10-12
+60,SP-001-L,Sp5der Web Hoodie,Clothing,Pink,L,7007234567891,165.00,2,13,Rack G-1,2025-10-12

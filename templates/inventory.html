@@ -1,8 +1,10 @@
 {% extends "base.html" %}
 
-{% block title %}Inventory - Inventory Manager{% endblock %}
+{% block title %}Inventory - DonXEra{% endblock %}
 
-{% block header %}Inventory Management{% endblock %}
+{% block header %}Inventory{% endblock %}
+
+{% block subtitle %}All products and stock levels{% endblock %}
 
 {% block content %}
 <!-- Search and Filter Controls -->
@@ -10,7 +12,7 @@
     <div class="col-md-6">
         <div class="input-group">
             <span class="input-group-text"><i class="bi bi-search"></i></span>
-            <input type="text" class="form-control" id="searchInput" placeholder="Search by SKU, Name, Category...">
+            <input type="text" class="form-control" id="searchInput" placeholder="Search by product code, name, category...">
         </div>
     </div>
     <div class="col-md-3">
@@ -86,7 +88,7 @@
                 <thead class="table-light">
                     <tr>
                         <th class="sortable" data-column="SKU">
-                            SKU <i class="bi bi-arrow-up-down"></i>
+                            Product Code <i class="bi bi-arrow-up-down"></i>
                         </th>
                         <th class="sortable" data-column="Name">
                             Name <i class="bi bi-arrow-up-down"></i>
