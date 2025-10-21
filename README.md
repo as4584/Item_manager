@@ -35,20 +35,48 @@ chmod +x docker-build.sh
 ## 💻 Manual Setup (Without Docker)
 
 ### Prerequisites
-- Python 3.11+
-- pip
+- Python 3.10+
+- [Poetry](https://python-poetry.org/) for dependency management
 
 ### Installation
 
 ```bash
-# 1. Install dependencies
-pip install -r requirements.txt
+# 1. Install Poetry (if not already installed)
+curl -sSL https://install.python-poetry.org | python3 -
 
-# 2. Run in demo mode
-DEMO_MODE=true PORT=8080 python3 app.py
+# 2. Install dependencies
+poetry install
 
-# 3. Open browser
-# Navigate to http://localhost:8080
+# 3. Run in demo mode
+poetry run python src/app.py
+
+# Or use Flask directly
+poetry run flask --app src/app run --port 5000
+
+# 4. Open browser
+# Navigate to http://localhost:5000
+```
+
+### Development Commands
+
+```bash
+# Run tests
+poetry run pytest
+
+# Run tests with coverage
+poetry run pytest --cov=src --cov-report=term-missing
+
+# Run linting
+poetry run ruff check src/ tests/
+
+# Run type checking
+poetry run mypy src/ --strict
+
+# Run security scan
+poetry run bandit -r src/
+
+# Format code (auto-fix)
+poetry run ruff check src/ tests/ --fix
 ```
 
 ---

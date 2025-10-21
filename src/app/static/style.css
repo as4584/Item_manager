@@ -813,3 +813,310 @@ i.bi {
         transform: translateY(0);
     }
 }
+
+/* ========================================
+   MOBILE RESPONSIVE INVENTORY CARDS
+   ======================================== */
+
+/* Mobile Inventory Card Layout */
+.mobile-inventory-card {
+    background: var(--bg-main);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    margin-bottom: 0.75rem;
+    padding: 1rem;
+    transition: all 0.2s ease;
+}
+
+.mobile-inventory-card:active {
+    transform: scale(0.98);
+    box-shadow: 0 2px 8px var(--shadow-hover);
+}
+
+/* Card Header */
+.mobile-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--border);
+}
+
+.mobile-card-title {
+    flex: 1;
+    min-width: 0; /* Prevent text overflow */
+}
+
+.mobile-card-title strong {
+    display: block;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--primary);
+    margin-bottom: 0.25rem;
+    line-height: 1.3;
+}
+
+.mobile-card-sku {
+    font-size: 0.75rem;
+    color: var(--text-light);
+    font-family: 'SF Mono', Monaco, 'Cascadia Code', monospace;
+}
+
+.mobile-card-status {
+    flex-shrink: 0;
+    margin-left: 0.5rem;
+}
+
+/* Card Body */
+.mobile-card-body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.mobile-info-row {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.mobile-info-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    flex: 1;
+    min-width: 0; /* Prevent overflow */
+}
+
+.mobile-label {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-light);
+    font-weight: 600;
+}
+
+.mobile-info-item strong {
+    color: var(--primary);
+    font-size: 0.9rem;
+}
+
+.mobile-info-item span:not(.badge):not(.mobile-label) {
+    font-size: 0.85rem;
+    color: var(--text);
+}
+
+/* Mobile Badge Sizes */
+@media (max-width: 991.98px) {
+    .badge {
+        font-size: 0.7rem;
+        padding: 0.25rem 0.5rem;
+    }
+}
+
+/* ========================================
+   MOBILE RESPONSIVE ADJUSTMENTS
+   ======================================== */
+
+/* Container padding on mobile */
+@media (max-width: 767.98px) {
+    .container {
+        padding: 0 1rem;
+    }
+    
+    .page-header {
+        padding: 2rem 0 1.5rem 0;
+        margin-bottom: 1.5rem;
+    }
+    
+    .page-header h1 {
+        font-size: 1.5rem;
+    }
+    
+    .page-header p {
+        font-size: 0.85rem;
+    }
+}
+
+/* Search and filter controls on mobile */
+@media (max-width: 767.98px) {
+    .row.mb-3 .col-md-6,
+    .row.mb-3 .col-md-3 {
+        width: 100%;
+        margin-bottom: 0.5rem;
+    }
+    
+    .row.mb-3 .col-md-6:last-child,
+    .row.mb-3 .col-md-3:last-child {
+        margin-bottom: 0;
+    }
+}
+
+/* Summary cards responsive */
+@media (max-width: 767.98px) {
+    .row.mb-3 .col-md-3 {
+        padding: 0.5rem;
+    }
+    
+    .card-body.py-2 small {
+        font-size: 0.7rem;
+    }
+    
+    .card-body.py-2 strong {
+        font-size: 0.9rem;
+    }
+}
+
+/* Card header buttons on mobile */
+@media (max-width: 575.98px) {
+    .card-header h5 {
+        font-size: 0.95rem;
+    }
+    
+    .card-header .btn-sm {
+        padding: 0.25rem 0.5rem;
+        font-size: 0.75rem;
+    }
+    
+    .card-header .btn-sm i {
+        font-size: 0.85rem;
+    }
+}
+
+/* Navbar responsive */
+@media (max-width: 991.98px) {
+    .navbar {
+        padding: 0.75rem 0;
+    }
+    
+    .navbar-brand {
+        font-size: 1.1rem;
+    }
+    
+    .nav-link {
+        font-size: 0.85rem;
+        padding: 0.4rem 0.75rem !important;
+    }
+    
+    .navbar-collapse {
+        margin-top: 0.5rem;
+    }
+}
+
+/* Table responsive improvements */
+@media (max-width: 991.98px) {
+    .table-responsive {
+        font-size: 0.85rem;
+    }
+    
+    .table th,
+    .table td {
+        padding: 0.5rem;
+    }
+}
+
+/* Percentage-based layout for very small screens */
+@media (max-width: 575.98px) {
+    .mobile-info-row {
+        flex-direction: column;
+    }
+    
+    .mobile-info-item {
+        width: 100%;
+    }
+    
+    /* Stack filter controls */
+    .input-group {
+        width: 100%;
+    }
+    
+    .form-select {
+        width: 100%;
+    }
+}
+
+/* Ensure viewport is properly set for mobile */
+@media (max-width: 767.98px) {
+    html {
+        -webkit-text-size-adjust: 100%;
+        -ms-text-size-adjust: 100%;
+    }
+    
+    body {
+        overflow-x: hidden;
+    }
+}
+
+/* Touch-friendly buttons on mobile */
+@media (max-width: 767.98px) {
+    .btn {
+        min-height: 44px;
+        min-width: 44px;
+    }
+    
+    .btn-sm {
+        min-height: 36px;
+        min-width: 36px;
+    }
+    
+    /* Dashboard metric cards */
+    .metric-card {
+        margin-bottom: 1rem;
+    }
+    
+    .metric-card .card-title {
+        font-size: 2rem;
+    }
+    
+    .metric-card .card-subtitle {
+        font-size: 0.75rem;
+    }
+    
+    /* Quick action buttons */
+    .col-md-3.mb-2 {
+        margin-bottom: 0.75rem !important;
+    }
+    
+    .col-md-3.mb-2 .btn {
+        font-size: 0.85rem;
+        padding: 0.5rem 0.75rem;
+    }
+}
+
+/* Dashboard responsive adjustments */
+@media (max-width: 575.98px) {
+    .row.mb-4 .col-md-3 {
+        margin-bottom: 0.75rem;
+    }
+    
+    .card-body h3 {
+        font-size: 2rem;
+    }
+    
+    .card-body h6 {
+        font-size: 0.75rem;
+    }
+}
+
+
+/* Scrollbar styling for mobile webkit browsers */
+@media (max-width: 991.98px) {
+    .table-responsive::-webkit-scrollbar {
+        height: 8px;
+    }
+    
+    .table-responsive::-webkit-scrollbar-track {
+        background: var(--bg-secondary);
+        border-radius: 4px;
+    }
+    
+    .table-responsive::-webkit-scrollbar-thumb {
+        background: var(--border);
+        border-radius: 4px;
+    }
+    
+    .table-responsive::-webkit-scrollbar-thumb:hover {
+        background: var(--secondary);
+    }
+}

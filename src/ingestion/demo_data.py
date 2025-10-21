@@ -12,7 +12,8 @@ def load_demo_data():
     """Load sample inventory data from CSV for demo mode."""
     global DEMO_INVENTORY
     
-    csv_path = Path(__file__).parent / 'sample_data' / 'products.csv'
+    # Path to sample_data at repo root (three levels up from src/ingestion)
+    csv_path = Path(__file__).parent.parent.parent / 'sample_data' / 'products.csv'
     
     if csv_path.exists():
         DEMO_INVENTORY = pd.read_csv(csv_path)
