@@ -33,7 +33,7 @@ class TestLightspeedGatewayPagination:
             'meta': {'total': 2, 'per_page': 250}
         }
         
-        with patch('requests.Session.get') as mock_get:
+        with patch('src.infra.lightspeed_client.requests.Session.get') as mock_get:
             mock_get.return_value.json.return_value = mock_response
             mock_get.return_value.status_code = 200
             
@@ -57,7 +57,7 @@ class TestLightspeedGatewayPagination:
         page2 = {'data': [{'id': str(i)} for i in range(250, 400)]}
         page3 = {'data': []}  # Empty page indicates end
         
-        with patch('requests.Session.get') as mock_get:
+        with patch('src.infra.lightspeed_client.requests.Session.get') as mock_get:
             mock_get.return_value.json.side_effect = [page1, page2, page3]
             mock_get.return_value.status_code = 200
             
@@ -80,7 +80,7 @@ class TestLightspeedGatewayPagination:
         """Test pagination with no results."""
         from src.infra.lightspeed_client import LightspeedGateway
         
-        with patch('requests.Session.get') as mock_get:
+        with patch('src.infra.lightspeed_client.requests.Session.get') as mock_get:
             mock_get.return_value.json.return_value = {'data': []}
             mock_get.return_value.status_code = 200
             
@@ -101,7 +101,7 @@ class TestLightspeedGatewayRetry:
         """Test automatic retry when hitting rate limit (429 status)."""
         from src.infra.lightspeed_client import LightspeedGateway
         
-        with patch('requests.Session.get') as mock_get:
+        with patch('src.infra.lightspeed_client.requests.Session.get') as mock_get:
             # First call: rate limited
             rate_limit_response = Mock()
             rate_limit_response.status_code = 429
@@ -131,7 +131,7 @@ class TestLightspeedGatewayRetry:
         """Test exponential backoff for transient errors."""
         from src.infra.lightspeed_client import LightspeedGateway
         
-        with patch('requests.Session.get') as mock_get:
+        with patch('src.infra.lightspeed_client.requests.Session.get') as mock_get:
             # Simulate transient failures
             mock_get.side_effect = [
                 requests.exceptions.ConnectionError(),
@@ -163,7 +163,7 @@ class TestLightspeedGatewayRetry:
         from src.infra.lightspeed_client import LightspeedGateway
         from src.infra.exceptions import LightspeedAPIError
         
-        with patch('requests.Session.get') as mock_get:
+        with patch('src.infra.lightspeed_client.requests.Session.get') as mock_get:
             mock_get.side_effect = requests.exceptions.ConnectionError()
             
             with patch('time.sleep'):
@@ -187,7 +187,7 @@ class TestLightspeedGatewayRateLimiting:
         """Test that gateway enforces delay between requests."""
         from src.infra.lightspeed_client import LightspeedGateway
         
-        with patch('requests.Session.get') as mock_get:
+        with patch('src.infra.lightspeed_client.requests.Session.get') as mock_get:
             mock_get.return_value.status_code = 200
             mock_get.return_value.json.return_value = {'data': []}
             
@@ -210,7 +210,7 @@ class TestLightspeedGatewayRateLimiting:
         """Test that Retry-After header overrides default delay."""
         from src.infra.lightspeed_client import LightspeedGateway
         
-        with patch('requests.Session.get') as mock_get:
+        with patch('src.infra.lightspeed_client.requests.Session.get') as mock_get:
             rate_limit = Mock()
             rate_limit.status_code = 429
             rate_limit.headers = {'Retry-After': '10'}
@@ -238,7 +238,7 @@ class TestLightspeedGatewayIntegration:
         """Test fetching products with variants through gateway."""
         from src.infra.lightspeed_client import LightspeedGateway
         
-        with patch('requests.Session.get') as mock_get:
+        with patch('src.infra.lightspeed_client.requests.Session.get') as mock_get:
             # Mock product response
             products_response = {
                 'data': [
@@ -294,7 +294,7 @@ class TestLightspeedGatewayErrorHandling:
         from src.infra.lightspeed_client import LightspeedGateway
         from src.infra.exceptions import LightspeedAuthError
         
-        with patch('requests.Session.get') as mock_get:
+        with patch('src.infra.lightspeed_client.requests.Session.get') as mock_get:
             mock_get.return_value.status_code = 401
             mock_get.return_value.raise_for_status.side_effect = requests.exceptions.HTTPError()
             
@@ -308,7 +308,7 @@ class TestLightspeedGatewayErrorHandling:
         """Test handling of 404 errors."""
         from src.infra.lightspeed_client import LightspeedGateway
         
-        with patch('requests.Session.get') as mock_get:
+        with patch('src.infra.lightspeed_client.requests.Session.get') as mock_get:
             mock_get.return_value.status_code = 404
             mock_get.return_value.json.return_value = {'error': 'Not found'}
             
@@ -324,7 +324,7 @@ class TestLightspeedGatewayErrorHandling:
         """Test that server errors (5xx) trigger retry logic."""
         from src.infra.lightspeed_client import LightspeedGateway
         
-        with patch('requests.Session.get') as mock_get:
+        with patch('src.infra.lightspeed_client.requests.Session.get') as mock_get:
             error_response = Mock()
             error_response.status_code = 500
             error_response.raise_for_status.side_effect = requests.exceptions.HTTPError()
