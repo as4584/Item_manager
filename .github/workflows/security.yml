@@ -10,7 +10,7 @@ on:
     - cron: '0 3 * * 3'
 
 env:
-  PYTHON_VERSION: "3.11"
+  PYTHON_VERSION: "3.10"
 
 jobs:
   bandit:
@@ -24,12 +24,17 @@ jobs:
       with:
         python-version: ${{ env.PYTHON_VERSION }}
     
-    - name: Install Bandit
-      run: pip install bandit[toml]
+    - name: Install Poetry
+      run: |
+        curl -sSL https://install.python-poetry.org | python3 -
+        echo "$HOME/.local/bin" >> $GITHUB_PATH
+    
+    - name: Install dependencies
+      run: poetry install --no-root
     
     - name: Run Bandit scan
       run: |
-        bandit -r services/ jobs/ app.py \
+        poetry run bandit -r src/ \
           -f json \
           -o bandit-report.json \
           --severity-level medium \
@@ -38,7 +43,7 @@ jobs:
     
     - name: Run Bandit scan (console output)
       run: |
-        bandit -r services/ jobs/ app.py \
+        poetry run bandit -r src/ \
           --severity-level medium \
           --confidence-level medium
     
@@ -61,22 +66,24 @@ jobs:
       with:
         python-version: ${{ env.PYTHON_VERSION }}
     
-    - name: Install dependencies
+    - name: Install Poetry
       run: |
-        python -m pip install --upgrade pip
-        pip install safety
-        pip install -r requirements.txt
+        curl -sSL https://install.python-poetry.org | python3 -
+        echo "$HOME/.local/bin" >> $GITHUB_PATH
+    
+    - name: Install dependencies
+      run: poetry install --no-root
     
     - name: Run Safety check (JSON)
       run: |
-        safety check \
+        poetry run safety check \
           --json \
           --output safety-report.json \
           --continue-on-error
       continue-on-error: true
     
     - name: Run Safety check (console)
-      run: safety check
+      run: poetry run safety check
       continue-on-error: true
     
     - name: Upload Safety results
@@ -98,21 +105,23 @@ jobs:
       with:
         python-version: ${{ env.PYTHON_VERSION }}
     
-    - name: Install pip-audit
-      run: pip install pip-audit
+    - name: Install Poetry
+      run: |
+        curl -sSL https://install.python-poetry.org | python3 -
+        echo "$HOME/.local/bin" >> $GITHUB_PATH
     
     - name: Install dependencies
-      run: pip install -r requirements.txt
+      run: poetry install --no-root
     
     - name: Run pip-audit (JSON)
       run: |
-        pip-audit \
+        poetry run pip-audit \
           --format json \
           --output pip-audit-report.json
       continue-on-error: true
     
     - name: Run pip-audit (console)
-      run: pip-audit
+      run: poetry run pip-audit
       continue-on-error: true
     
     - name: Upload pip-audit results
@@ -123,7 +132,6 @@ jobs:
         path: pip-audit-report.json
         retention-days: 30
 
-  # Aggregate security reports
   security-summary:
     name: Security Summary
     runs-on: ubuntu-latest
@@ -182,8 +190,6 @@ jobs:
         echo "Safety: $SAFETY_STATUS"
         echo "pip-audit: $PIPAUDIT_STATUS"
         
-        # Only fail if Bandit fails (high-confidence issues)
-        # Safety and pip-audit are advisory (may have known acceptable risks)
         if [ "$BANDIT_STATUS" == "failure" ]; then
           echo "❌ Bandit found security issues that must be addressed"
           exit 1

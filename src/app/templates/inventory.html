@@ -75,15 +75,16 @@
         </h5>
         <div>
             <button class="btn btn-outline-secondary btn-sm" onclick="exportInventory()">
-                <i class="bi bi-download"></i> Export CSV
+                <i class="bi bi-download d-none d-sm-inline"></i> <span class="d-none d-sm-inline">Export</span><span class="d-sm-none">CSV</span>
             </button>
             <button class="btn btn-outline-primary btn-sm" onclick="syncInventory()">
-                <i class="bi bi-arrow-repeat"></i> Refresh
+                <i class="bi bi-arrow-repeat"></i> <span class="d-none d-sm-inline">Refresh</span>
             </button>
         </div>
     </div>
     <div class="card-body p-0">
-        <div class="table-responsive">
+        <!-- Desktop Table View -->
+        <div class="table-responsive d-none d-lg-block">
             <table class="table table-hover mb-0" id="inventoryTable">
                 <thead class="table-light">
                     <tr>
@@ -154,6 +155,70 @@
                 </tbody>
             </table>
         </div>
+        
+        <!-- Mobile Card View -->
+        <div class="d-lg-none" id="mobileInventoryList">
+            {% for item in inventory %}
+            <div class="mobile-inventory-card" data-sku="{{ item.SKU }}" data-category="{{ item.Category }}" data-qty="{{ item.QtyOnHand }}">
+                <div class="mobile-card-header">
+                    <div class="mobile-card-title">
+                        <strong>{{ item.Name }}</strong>
+                        <div class="mobile-card-sku">{{ item.SKU }}</div>
+                    </div>
+                    <div class="mobile-card-status">
+                        {% if item.QtyOnHand == 0 %}
+                            <span class="badge bg-danger">Out</span>
+                        {% elif item.QtyOnHand <= 5 %}
+                            <span class="badge bg-warning">Low</span>
+                        {% else %}
+                            <span class="badge bg-success">In Stock</span>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <div class="mobile-card-body">
+                    <div class="mobile-info-row">
+                        <div class="mobile-info-item">
+                            <span class="mobile-label">Category</span>
+                            <span class="badge bg-secondary">{{ item.Category }}</span>
+                        </div>
+                        <div class="mobile-info-item">
+                            <span class="mobile-label">Price</span>
+                            <strong>${{ "%.2f"|format(item.RetailPrice) }}</strong>
+                        </div>
+                    </div>
+                    
+                    <div class="mobile-info-row">
+                        <div class="mobile-info-item">
+                            <span class="mobile-label">Color</span>
+                            <span>{{ item.Color }}</span>
+                        </div>
+                        <div class="mobile-info-item">
+                            <span class="mobile-label">Size</span>
+                            <span>{{ item.Size }}</span>
+                        </div>
+                    </div>
+                    
+                    <div class="mobile-info-row">
+                        <div class="mobile-info-item">
+                            <span class="mobile-label">On Hand</span>
+                            <span class="badge {% if item.QtyOnHand == 0 %}bg-danger{% elif item.QtyOnHand <= 5 %}bg-warning{% else %}bg-success{% endif %}">
+                                {{ item.QtyOnHand }}
+                            </span>
+                        </div>
+                        <div class="mobile-info-item">
+                            <span class="mobile-label">Sold</span>
+                            <span>{{ item.QtySold or 0 }}</span>
+                        </div>
+                        <div class="mobile-info-item">
+                            <span class="mobile-label">Location</span>
+                            <span>{{ item.Location }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
     </div>
     <div class="card-footer">
         <div class="d-flex justify-content-between align-items-center">
@@ -191,6 +256,7 @@
         const categoryFilter = document.getElementById('categoryFilter').value;
         const stockFilter = document.getElementById('stockFilter').value;
         
+        // Filter desktop table rows
         const rows = document.querySelectorAll('#inventoryTable tbody tr');
         let visibleCount = 0;
         
@@ -221,6 +287,36 @@
             
             row.style.display = showRow ? '' : 'none';
             if (showRow) visibleCount++;
+        });
+        
+        // Filter mobile cards
+        const mobileCards = document.querySelectorAll('.mobile-inventory-card');
+        mobileCards.forEach(card => {
+            const sku = card.dataset.sku.toLowerCase();
+            const name = card.querySelector('.mobile-card-title strong').textContent.toLowerCase();
+            const category = card.dataset.category;
+            const qty = parseInt(card.dataset.qty);
+            
+            let showCard = true;
+            
+            // Text search
+            if (searchTerm && !sku.includes(searchTerm) && !name.includes(searchTerm) && !category.toLowerCase().includes(searchTerm)) {
+                showCard = false;
+            }
+            
+            // Category filter
+            if (categoryFilter && category !== categoryFilter) {
+                showCard = false;
+            }
+            
+            // Stock filter
+            if (stockFilter) {
+                if (stockFilter === 'in-stock' && qty <= 5) showCard = false;
+                if (stockFilter === 'low-stock' && (qty === 0 || qty > 5)) showCard = false;
+                if (stockFilter === 'out-of-stock' && qty !== 0) showCard = false;
+            }
+            
+            card.style.display = showCard ? '' : 'none';
         });
         
         document.getElementById('visibleRows').textContent = visibleCount;

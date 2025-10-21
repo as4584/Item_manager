@@ -1,6 +1,10 @@
 # Core Flask dependencies
 flask==3.0.0
 werkzeug==3.0.1
+gunicorn==21.2.0
+
+# Database ORM
+sqlalchemy==2.0.23
 
 # Data processing
 pandas==2.1.4
