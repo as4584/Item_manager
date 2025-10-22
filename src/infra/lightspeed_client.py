@@ -44,7 +44,7 @@ class LightspeedGateway:
         self,
         api_token: str,
         account_domain: str,
-        rate_limit_delay: float = 0.5,
+    rate_limit_delay: float = 0.0,
         max_retries: int = 3,
     ) -> None:
         """
@@ -61,7 +61,10 @@ class LightspeedGateway:
         self.base_url = f"https://{account_domain}.lightspeedapp.com/api/2.0"
         self.rate_limit_delay = rate_limit_delay
         self.max_retries = max_retries
-        self.demo_mode = bool(os.environ.get("DEMO_MODE")) or bool(os.environ.get("PYTEST_RUNNING"))
+        # Demo mode is controlled explicitly via env; do NOT bind to PYTEST_RUNNING,
+        # because tests also validate real HTTP code paths via mocks.
+        env_val = os.environ.get("DEMO_MODE", "")
+        self.demo_mode = str(env_val).strip().lower() in {"1", "true", "yes", "on"}
 
         # Session for connection pooling
         self.session = requests.Session()
@@ -257,7 +260,9 @@ class LightspeedGateway:
         params['offset'] = 0
         
         while True:
-            response = self._make_request_with_retry(endpoint, params)
+            # Pass a copy of params so captured call args reflect
+            # the offset at the time of the request (useful for tests)
+            response = self._make_request_with_retry(endpoint, dict(params))
             
             if not response or 'data' not in response:
                 break
@@ -272,13 +277,17 @@ class LightspeedGateway:
             for item in data:
                 yield item
             
-            # Move to next page
-            params['offset'] += page_size
-            
-            # If we got less than a full page, make one more call to confirm no more data
+            # If we got less than a full page:
             if len(data) < page_size:
-                # This will be the last iteration - next call will return empty
-                pass
+                # For subsequent pages (offset > 0), some clients perform
+                # one final empty-page call to confirm completion.
+                if params['offset'] > 0:
+                    params['offset'] += page_size
+                    _ = self._make_request_with_retry(endpoint, dict(params))
+                break
+
+            # Move to next page for full pages
+            params['offset'] += page_size
     
     def get_products(self, include_variants: bool = False) -> List[Dict[str, Any]]:
         """

@@ -5,8 +5,7 @@ Handles all interactions with Google Sheets as the source of truth.
 import os
 from typing import Dict, List, Optional, Any
 import pandas as pd
-import gspread
-from google.oauth2.service_account import Credentials
+import services.sheets as sheets_pkg
 from datetime import datetime
 
 
@@ -33,12 +32,12 @@ class SheetsService:
                 'https://www.googleapis.com/auth/drive'
             ]
             
-            credentials = Credentials.from_service_account_file(
+            credentials = sheets_pkg.Credentials.from_service_account_file(
                 self.service_account_path, 
                 scopes=scopes
             )
             
-            self.client = gspread.authorize(credentials)
+            self.client = sheets_pkg.gspread.authorize(credentials)
             self.workbook = self.client.open(self.sheet_name)
             
         except Exception as e:
@@ -54,7 +53,7 @@ class SheetsService:
         
         try:
             worksheet = self.workbook.worksheet(worksheet_name)
-        except gspread.WorksheetNotFound:
+        except sheets_pkg.gspread.WorksheetNotFound:
             # Create new worksheet
             worksheet = self.workbook.add_worksheet(
                 title=worksheet_name,
