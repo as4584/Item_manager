@@ -1,5 +1,14 @@
 from flask import Flask, render_template, jsonify, request
 import os
+import json
+import pandas as pd
+from typing import List, Dict, Any
+
+# Expose SheetsRepository symbol for test patching
+try:
+	from src.infra.sheets_repo import SheetsRepository  # type: ignore
+except Exception:  # pragma: no cover - fallback
+	from infra.sheets_repo import SheetsRepository  # type: ignore
 
 
 def create_app() -> Flask:
@@ -78,6 +87,73 @@ def create_app() -> Flask:
 		sheets_path = os.environ.get('GOOGLE_SERVICE_ACCOUNT_JSON')
 		sheets_configured = bool(sheets_path and os.path.exists(sheets_path))
 		return jsonify({'status': 'ok', 'demo_mode': demo_mode, 'sheets_configured': sheets_configured})
+
+	@app.route('/sync/sheets/full', methods=['POST'])
+	def sync_sheets_full():
+		"""Full Sheets sync and RestockList mirroring.
+
+		If DEMO_MODE=true, load fixtures and write to Sheets via SheetsRepository.
+		Returns JSON summary.
+		"""
+		demo_mode = str(os.environ.get('DEMO_MODE', '')).lower() in {'1','true','yes','on'}
+		if not demo_mode:
+			return jsonify({'status': 'error', 'message': 'Live sync not implemented yet', 'demo_mode': False}), 501
+
+		# Load demo fixtures
+		root = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
+		fx_dir = os.path.join(root, 'sample_data', 'lightspeed')
+		with open(os.path.join(fx_dir, 'products.json'), 'r') as f:
+			products = json.load(f).get('data', [])
+		with open(os.path.join(fx_dir, 'inventory.json'), 'r') as f:
+			inventory = json.load(f).get('data', [])
+
+		# Normalize into Inventory sheet schema
+		rows: List[Dict[str, Any]] = []
+		prod_by_id = {p.get('id'): p for p in products}
+		for inv in inventory:
+			pid = inv.get('product_id') or inv.get('variant_id')  # demo uses variant_id
+			prod = prod_by_id.get(pid) or {}
+			rows.append({
+				'ItemID': pid or '',
+				'SKU': prod.get('sku') or '',
+				'Name': prod.get('name') or '',
+				'Category': prod.get('category') or '',
+				'Color': prod.get('color') or '',
+				'Size': prod.get('size') or '',
+				'Barcode': prod.get('barcode') or '',
+				'RetailPrice': float(prod.get('retail_price', 0.0) or 0.0),
+				'QtyOnHand': int(inv.get('quantity_on_hand', 0) or 0),
+				'QtySold': int(inv.get('quantity_sold', 0) or 0),
+				'Location': inv.get('location_id') or '',
+				'LastUpdated': inv.get('last_updated') or '',
+			})
+
+		df = pd.DataFrame(rows)
+		# Sorting Category -> Name -> Size
+		if not df.empty:
+			df = df.sort_values(by=['Category','Name','Size'], kind='stable', na_position='last')
+
+		# Connect Sheets repo (gspread is patched in tests)
+		repo = SheetsRepository(credentials_path='fake.json', sheet_name=os.environ.get('GOOGLE_SHEET_NAME','Live ATS Inventory'))
+		# Write inventory
+		repo.update_inventory(df)
+		# Get threshold
+		cfg = {}
+		try:
+			cfg = repo.get_config()
+		except Exception:
+			cfg = {}
+		threshold = int(cfg.get('LowStockThreshold', 5))
+		low_df = df[df['QtyOnHand'] <= threshold].copy()
+		# Restock mirror: SKU,Name,Size,QtyOnHand sorted Name->Size (Category may be useful but keep concise)
+		mirror_cols = ['SKU','Name','Size','QtyOnHand']
+		missing = [c for c in mirror_cols if c not in low_df.columns]
+		for c in missing:
+			low_df[c] = ''
+		low_df = low_df[mirror_cols].sort_values(by=['Name','Size'], kind='stable')
+		repo.update_restock_list(low_df)
+
+		return jsonify({'status': 'success', 'rows_written': int(len(df)), 'low_stock_count': int(len(low_df)), 'demo_mode': True})
 
 	return app
 

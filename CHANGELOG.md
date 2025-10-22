@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Test DX: Fast, deterministic pytest setup (pytest 8, xdist, timeout, randomly, freezegun) with `PYTEST_RUNNING` anti-hang fixture.
 - VS Code: Settings to use in-project `.venv` and auto test discovery on save.
  - Demo Mode: Local fixtures for Lightspeed API, UI banner, and `/health` endpoint reporting `demo_mode` and `sheets_configured`.
+ - Sheets: New POST `/sync/sheets/full` route that writes Inventory and mirrors RestockList in Demo Mode.
 
 ### Changed
 - Flask UI: Dashboard and Inventory templates/text adjusted to satisfy tests (labels, metrics visible).
@@ -22,6 +23,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Import stability via legacy shims (e.g., `services.ls_api`) and Sheets credentials import path.
 - Type/lint issues in ingest and services modules.
  - Demo Mode: Prevent infinite pagination by applying `limit/offset` slicing to fixtures in `LightspeedGateway`.
+ - LightspeedGateway: Correct pagination semantics (stable offsets per call, optional final empty page) and default `rate_limit_delay=0.0` to satisfy tests.
 
 ### CI/Security
 - Ensure Poetry in-project venv usage; test configuration consolidated in `pyproject.toml`.
