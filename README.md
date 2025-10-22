@@ -104,6 +104,20 @@ poetry run pytest -q tests/test_app.py -k test_dashboard_route -x
 Notes:
 - When `PYTEST_RUNNING=1` is set, `time.sleep` is monkeypatched to a no-op in tests to avoid delays.
 - Prefer stubbing network calls, and mark such tests with `@pytest.mark.no_network`.
+
+### Run in Demo Mode (no credentials or network)
+
+```
+cp .env.example .env
+export DEMO_MODE=true
+poetry install --sync
+poetry run python -m src.app
+```
+
+In Demo Mode:
+- Lightspeed client loads fixtures from `sample_data/lightspeed/*.json`.
+- No HTTP requests are made; sleeps are no-ops.
+- The dashboard shows a “Demo Mode Active” banner.
 ```
 
 ---

@@ -29,8 +29,20 @@ jobs:
         with:
           poetry-version: "1.8.3"
 
+      - name: Cache Poetry and venv
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/pip
+            ~/.cache/pypoetry
+            .venv
+          key: ${{ runner.os }}-${{ env.PYTHON_VERSION }}-${{ hashFiles('**/poetry.lock') }}
+
       - name: Install project deps
         run: poetry install --no-interaction --no-root
+
+      - name: Install Bandit SARIF formatter
+        run: poetry run pip install bandit-sarif-formatter
 
       - name: Run Bandit (JSON)
         run: |
@@ -40,6 +52,16 @@ jobs:
             --severity-level medium \
             --confidence-level medium
         continue-on-error: true
+
+      - name: Generate Bandit SARIF
+        run: poetry run bandit-sarif -i bandit-report.json -o bandit.sarif
+        continue-on-error: true
+
+      - name: Upload SARIF (Bandit)
+        if: always()
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: bandit.sarif
 
       - name: Run Bandit (console)
         run: |
@@ -71,6 +93,15 @@ jobs:
         uses: abatilo/actions-poetry@v2
         with:
           poetry-version: "1.8.3"
+
+      - name: Cache Poetry and venv
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/pip
+            ~/.cache/pypoetry
+            .venv
+          key: ${{ runner.os }}-${{ env.PYTHON_VERSION }}-${{ hashFiles('**/poetry.lock') }}
 
       - name: Install project deps
         run: poetry install --no-interaction --no-root
@@ -111,6 +142,15 @@ jobs:
         with:
           poetry-version: "1.8.3"
 
+      - name: Cache Poetry and venv
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/pip
+            ~/.cache/pypoetry
+            .venv
+          key: ${{ runner.os }}-${{ env.PYTHON_VERSION }}-${{ hashFiles('**/poetry.lock') }}
+
       - name: Install project deps
         run: poetry install --no-interaction --no-root
 
@@ -120,6 +160,16 @@ jobs:
             --format json \
             --output pip-audit-report.json
         continue-on-error: true
+
+      - name: Run pip-audit (SARIF)
+        run: poetry run pip-audit --format sarif --output pip-audit.sarif
+        continue-on-error: true
+
+      - name: Upload SARIF (pip-audit)
+        if: always()
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: pip-audit.sarif
 
       - name: Run pip-audit (console)
         run: poetry run pip-audit

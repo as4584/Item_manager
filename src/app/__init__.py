@@ -1,4 +1,5 @@
 from flask import Flask, render_template, jsonify, request
+import os
 
 
 def create_app() -> Flask:
@@ -10,7 +11,8 @@ def create_app() -> Flask:
 		total_skus = 245
 		total_on_hand = 1842
 		low_stock_count = 12
-		return render_template('index.html', total_skus=total_skus, total_on_hand=total_on_hand, low_stock_count=low_stock_count)
+		demo_mode = bool(os.environ.get('DEMO_MODE'))
+		return render_template('index.html', total_skus=total_skus, total_on_hand=total_on_hand, low_stock_count=low_stock_count, demo_mode=demo_mode)
 
 	@app.route('/inventory')
 	def inventory():
@@ -33,7 +35,8 @@ def create_app() -> Flask:
 				'QtySold': 7,
 			},
 		]
-		return render_template('inventory.html', inventory=items)
+		demo_mode = bool(os.environ.get('DEMO_MODE'))
+		return render_template('inventory.html', inventory=items, demo_mode=demo_mode)
 
 	@app.route('/low-stock')
 	def low_stock():
@@ -68,6 +71,13 @@ def create_app() -> Flask:
 		from_date = request.args.get('from')
 		to_date = request.args.get('to')
 		return jsonify({'status': 'success', 'from_date': from_date, 'to_date': to_date})
+
+	@app.route('/health')
+	def health():
+		demo_mode = bool(os.environ.get('DEMO_MODE'))
+		sheets_path = os.environ.get('GOOGLE_SERVICE_ACCOUNT_JSON')
+		sheets_configured = bool(sheets_path and os.path.exists(sheets_path))
+		return jsonify({'status': 'ok', 'demo_mode': demo_mode, 'sheets_configured': sheets_configured})
 
 	return app
 

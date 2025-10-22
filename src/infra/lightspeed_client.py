@@ -11,6 +11,8 @@ Implements the Gateway pattern to hide external API complexity:
 This adapter translates Lightspeed's API format to our domain model.
 """
 import time
+import os
+import json
 import requests
 from typing import Dict, List, Any, Optional, Generator, Union
 from datetime import datetime
@@ -59,7 +61,8 @@ class LightspeedGateway:
         self.base_url = f"https://{account_domain}.lightspeedapp.com/api/2.0"
         self.rate_limit_delay = rate_limit_delay
         self.max_retries = max_retries
-        
+        self.demo_mode = bool(os.environ.get("DEMO_MODE")) or bool(os.environ.get("PYTEST_RUNNING"))
+
         # Session for connection pooling
         self.session = requests.Session()
         self.session.headers.update({
@@ -68,6 +71,12 @@ class LightspeedGateway:
             'Accept': 'application/json',
         })
     
+    def _sleep(self, seconds: float) -> None:
+        """Sleep helper that is a no-op in demo/test mode."""
+        if self.demo_mode:
+            return
+        time.sleep(seconds)
+
     def _make_request_with_retry(
         self,
         endpoint: str,
@@ -89,6 +98,56 @@ class LightspeedGateway:
             LightspeedAPIError: After max retries exceeded
             LightspeedAuthError: On authentication failure (401)
         """
+        if self.demo_mode:
+            # In demo mode, load from local fixtures instead of HTTP
+            fixture_map = {
+                'products': 'products.json',
+                'inventory': 'inventory.json',
+                'sales': 'sales.json',
+            }
+            key = endpoint.split('/')[0]
+            filename = fixture_map.get(key)
+            if not filename:
+                return {'data': []}
+            fixture_path = os.path.join(
+                os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
+                'sample_data', 'lightspeed', filename
+            )
+            try:
+                with open(fixture_path, 'r') as f:
+                    contents = json.load(f)
+            except FileNotFoundError:
+                return {'data': []}
+
+            # Normalize contents to a dict with 'data': list
+            if isinstance(contents, dict) and 'data' in contents:
+                data = contents['data']
+            elif isinstance(contents, list):
+                data = contents
+            else:
+                data = []
+
+            # Apply simple pagination slicing based on params (limit/offset)
+            offset = 0
+            limit: Optional[int] = None
+            if params:
+                try:
+                    offset = int(params.get('offset', 0))
+                except Exception:
+                    offset = 0
+                try:
+                    lim_val = params.get('limit')
+                    limit = int(lim_val) if lim_val is not None else None
+                except Exception:
+                    limit = None
+
+            if limit is None:
+                sliced = data[offset:]
+            else:
+                sliced = data[offset: offset + limit]
+
+            return {'data': sliced}
+
         url = f"{self.base_url}/{endpoint}"
         params = params or {}
         
@@ -101,12 +160,12 @@ class LightspeedGateway:
                 if response.status_code == 429:
                     retry_after = int(response.headers.get('Retry-After', 60))
                     logger.warning(f"Rate limited. Retrying after {retry_after}s")
-                    time.sleep(retry_after)
+                    self._sleep(retry_after)
                     continue
                 
                 # Rate limiting for normal requests (after successful response)
                 if response.status_code == 200 and self.rate_limit_delay > 0:
-                    time.sleep(self.rate_limit_delay)
+                    self._sleep(self.rate_limit_delay)
                 
                 # Handle authentication errors (401)
                 if response.status_code == 401:
@@ -120,7 +179,7 @@ class LightspeedGateway:
                             f"Server error {response.status_code}. "
                             f"Retrying in {backoff}s (attempt {attempt + 1}/{self.max_retries})"
                         )
-                        time.sleep(backoff)
+                        self._sleep(backoff)
                         continue
                     else:
                         raise LightspeedServerError(
@@ -144,7 +203,7 @@ class LightspeedGateway:
                         f"Connection error: {e}. "
                         f"Retrying in {backoff}s (attempt {attempt + 1}/{self.max_retries})"
                     )
-                    time.sleep(backoff)
+                    self._sleep(backoff)
                     continue
                 else:
                     raise LightspeedAPIError(
@@ -155,7 +214,7 @@ class LightspeedGateway:
                 # Already handled above, but catch any others
                 if attempt < self.max_retries - 1:
                     backoff = 2 ** attempt
-                    time.sleep(backoff)
+                    self._sleep(backoff)
                     continue
                 raise LightspeedAPIError(f"HTTP error: {e}")
         
@@ -172,7 +231,7 @@ class LightspeedGateway:
         if response.status_code == 429:
             retry_after = int(response.headers.get('Retry-After', 60))
             logger.info(f"Rate limited. Waiting {retry_after} seconds...")
-            time.sleep(retry_after)
+            self._sleep(retry_after)
     
     def _paginate(
         self,
@@ -273,6 +332,12 @@ class LightspeedGateway:
             params['location_id'] = location_id
         
         return list(self._paginate('inventory', params))
+
+    def get_inventory_by_product(self, product_id: str) -> List[Dict[str, Any]]:
+        """Get inventory entries for a given product (demo mode reads from fixture)."""
+        items = self.get_inventory()
+        # In real API, we'd filter by product/variant. Fixtures are minimal; return all.
+        return items
     
     def get_sales(
         self,

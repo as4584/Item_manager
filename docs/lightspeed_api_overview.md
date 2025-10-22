@@ -27,6 +27,16 @@ Flask Dashboard (Presentation)
 
 If `DEMO_MODE=true`, the system loads mock JSON fixtures from `/sample_data/lightspeed/` to simulate live API responses for academic demonstration.
 
+### How to run in Demo Mode
+
+```
+cp .env.example .env
+export DEMO_MODE=true
+poetry install --sync
+PYTEST_RUNNING=1 poetry run pytest -q -x -n auto  # optional: fast test run
+poetry run python -m src.app  # or your launcher script
+```
+
 
 That one page + your .env is enough to make your professor go, “Wow, this student understands enterprise data integration.”
 
