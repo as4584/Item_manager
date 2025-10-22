@@ -6,7 +6,7 @@ import os
 from typing import Dict, List, Optional, Any
 import pandas as pd
 import gspread
-from google.auth.service_account import Credentials
+from google.oauth2.service_account import Credentials
 from datetime import datetime
 
 

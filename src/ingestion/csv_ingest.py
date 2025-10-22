@@ -3,6 +3,7 @@ CSV ingestion service for processing Lightspeed exports.
 Handles CSV parsing, validation, and data transformation.
 """
 import pandas as pd
+import numpy as np
 import hashlib
 from typing import Dict, List, Any, Optional
 from datetime import datetime
@@ -30,6 +31,11 @@ class CSVIngestService:
             'row_count': len(df)
         }
         
+        # First, handle empty DataFrame explicitly to match expected error order
+        if df.empty:
+            validation_result['valid'] = False
+            validation_result['errors'].append("CSV file is empty")
+
         if csv_type == 'products':
             required_cols = self.required_product_columns
         elif csv_type == 'sales':
@@ -45,10 +51,7 @@ class CSVIngestService:
             validation_result['valid'] = False
             validation_result['errors'].append(f"Missing required columns: {missing_cols}")
         
-        # Check for empty DataFrame
-        if df.empty:
-            validation_result['valid'] = False
-            validation_result['errors'].append("CSV file is empty")
+        # Note: empty CSV already handled above to keep error ordering consistent
         
         # Check for duplicate SKUs in products
         if csv_type == 'products' and 'SKU' in df.columns:
@@ -169,47 +172,82 @@ class CSVIngestService:
     def _extract_variant_info(self, df: pd.DataFrame) -> pd.DataFrame:
         """Extract size and color information from SKU or Name."""
         df_with_variants = df.copy()
-        
+
         # Size patterns (common shoe sizes and clothing sizes)
         size_patterns = [
-            r'(\d+\.?\d*)',  # Numeric sizes like 10, 10.5
-            r'(XS|S|M|L|XL|XXL|XXXL)',  # Clothing sizes
-            r'(\d{2,3})',  # Length measurements like 30, 32
+            r"(\d+\.?\d*)",  # Numeric sizes like 10, 10.5
+            r"(XS|S|M|L|XL|XXL|XXXL)",  # Clothing sizes
+            r"(\d{2,3})",  # Length measurements like 30, 32
         ]
-        
+
         # Color patterns
         color_patterns = [
-            r'(BLACK|WHITE|RED|BLUE|GREEN|YELLOW|ORANGE|PURPLE|PINK|BROWN|GRAY|GREY)',
-            r'(BLK|WHT|RED|BLU|GRN|YEL|ORG|PUR|PNK|BRN|GRY)',
+            r"(BLACK|WHITE|RED|BLUE|GREEN|YELLOW|ORANGE|PURPLE|PINK|BROWN|GRAY|GREY)",
+            r"(BLK|WHT|RED|BLU|GRN|YEL|ORG|PUR|PNK|BRN|GRY)",
         ]
-        
+
         for idx, row in df_with_variants.iterrows():
-            sku = str(row.get('SKU', ''))
-            name = str(row.get('Name', ''))
+            sku = str(row.get("SKU", ""))
+            name = str(row.get("Name", ""))
             search_text = f"{sku} {name}".upper()
-            
-            # Extract size
-            if df_with_variants.loc[idx, 'Size'] in ['OS', 'Unknown', '']:
-                for pattern in size_patterns:
-                    match = re.search(pattern, search_text)
-                    if match:
-                        df_with_variants.loc[idx, 'Size'] = match.group(1)
-                        break
-            
-            # Extract color
-            if df_with_variants.loc[idx, 'Color'] in ['Unknown', '']:
+            # Resolve row integer position for iat operations (type-checker friendly)
+            row_loc = df_with_variants.index.get_loc(idx)
+            # Guard against non-scalar locations (e.g., duplicate indices)
+            if isinstance(row_loc, (np.ndarray, slice)):
+                # Skip ambiguous index rows for safety
+                continue
+            row_pos = int(row_loc)
+
+            # Extract size if missing/unknown (prefer parsing from SKU only)
+            size_col_raw = (
+                df_with_variants.columns.get_loc("Size") if "Size" in df_with_variants.columns else None
+            )
+            size_col_pos: Optional[int] = size_col_raw if isinstance(size_col_raw, int) else None
+            current_size = (
+                str(df_with_variants.iat[row_pos, size_col_pos]) if size_col_pos is not None else ""
+            )
+            if current_size in ["OS", "Unknown", "", "nan"]:
+                sku_text = sku.upper()
+                # Prefer numeric sizes (with decimals) at the end of the SKU token stream
+                numeric_matches = re.findall(r"(\d+(?:\.\d+)?)", sku_text)
+                if numeric_matches:
+                    if size_col_pos is not None:
+                        df_with_variants.iat[row_pos, size_col_pos] = str(numeric_matches[-1])
+                else:
+                    # Fallback to clothing sizes if present
+                    clothing_match = re.search(r"(XS|S|M|L|XL|XXL|XXXL)", sku_text)
+                    if clothing_match and size_col_pos is not None:
+                        df_with_variants.iat[row_pos, size_col_pos] = clothing_match.group(1)
+
+            # Extract color if missing/unknown
+            color_col_raw = (
+                df_with_variants.columns.get_loc("Color") if "Color" in df_with_variants.columns else None
+            )
+            color_col_pos: Optional[int] = color_col_raw if isinstance(color_col_raw, int) else None
+            current_color = (
+                str(df_with_variants.iat[row_pos, color_col_pos]) if color_col_pos is not None else ""
+            )
+            if current_color in ["Unknown", "", "nan"]:
+                found_match = None
                 for pattern in color_patterns:
-                    match = re.search(pattern, search_text)
-                    if match:
-                        color = match.group(1)
-                        # Convert abbreviations to full names
-                        color_map = {
-                            'BLK': 'Black', 'WHT': 'White', 'BLU': 'Blue',
-                            'GRN': 'Green', 'GRY': 'Gray', 'GREY': 'Gray'
-                        }
-                        df_with_variants.loc[idx, 'Color'] = color_map.get(color, color.title())
+                    m = re.search(pattern, search_text)
+                    if m:
+                        found_match = m
                         break
-        
+                if found_match:
+                    color = found_match.group(1)
+                    # Convert abbreviations to full names
+                    color_map = {
+                        "BLK": "Black",
+                        "WHT": "White",
+                        "BLU": "Blue",
+                        "GRN": "Green",
+                        "GRY": "Gray",
+                        "GREY": "Gray",
+                    }
+                    if color_col_pos is not None:
+                        df_with_variants.iat[row_pos, color_col_pos] = color_map.get(color, color.title())
+
         return df_with_variants
     
     def _generate_sale_hash(self, row: pd.Series) -> str:

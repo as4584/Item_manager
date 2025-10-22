@@ -2,6 +2,7 @@
 Test configuration and fixtures for inventory manager tests.
 """
 import pytest
+import time
 import pandas as pd
 from datetime import datetime
 import os
@@ -143,3 +144,12 @@ def app():
 def client(app):
     """Create test client."""
     return app.test_client()
+
+
+# Global anti-hang: disable sleeps during tests when PYTEST_RUNNING is set
+@pytest.fixture(autouse=True)
+def no_sleep(monkeypatch):
+    import os
+
+    if os.environ.get("PYTEST_RUNNING"):
+        monkeypatch.setattr(time, "sleep", lambda *_: None)

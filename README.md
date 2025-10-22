@@ -1,3 +1,5 @@
+[![Security Scanning](https://github.com/as4584/Item_manager/actions/workflows/security.yml/badge.svg)](../../actions/workflows/security.yml)
+
 # 🖤 DonXEra Inventory Manager
 
 A minimalist inventory management system for sneaker and streetwear shops. Clean design, powerful features, easy to use.
@@ -77,6 +79,31 @@ poetry run bandit -r src/
 
 # Format code (auto-fix)
 poetry run ruff check src/ tests/ --fix
+
+### Fast test loop (deterministic, no hangs)
+
+1) Use an in-project virtualenv and install deps:
+
+```bash
+poetry config virtualenvs.in-project true
+poetry install --sync
+```
+
+2) Run tests fast and in parallel with timeouts. The PYTEST_RUNNING flag disables sleeps via an autouse fixture to prevent hangs:
+
+```bash
+PYTEST_RUNNING=1 poetry run pytest -q -x -n auto
+```
+
+3) Run a single file or test:
+
+```bash
+poetry run pytest -q tests/test_app.py -k test_dashboard_route -x
+```
+
+Notes:
+- When `PYTEST_RUNNING=1` is set, `time.sleep` is monkeypatched to a no-op in tests to avoid delays.
+- Prefer stubbing network calls, and mark such tests with `@pytest.mark.no_network`.
 ```
 
 ---

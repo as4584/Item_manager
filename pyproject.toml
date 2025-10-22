@@ -48,13 +48,17 @@ sqlalchemy = "^2.0.23"
 
 [tool.poetry.group.dev.dependencies]
 # Testing Framework
-pytest = "^7.4.3"
+pytest = "^8"
 pytest-cov = "^4.1.0"
 pytest-mock = "^3.12.0"
 pytest-asyncio = "^0.21.1"
+pytest-timeout = "^2"
+pytest-xdist = "^3"
+pytest-randomly = "^3"
+freezegun = "^1"
 
 # Linting & Formatting
-ruff = "^0.1.9"
+ruff = "^0.6"
 
 # Type Checking
 mypy = "^1.7.1"
@@ -72,6 +76,13 @@ coverage = {extras = ["toml"], version = "^7.3.3"}
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+# Convenient scripts (entry points)
+[tool.poetry.scripts]
+test = "pytest:main"
+"test:fast" = "pytest:main"
+lint = "ruff.__main__:main"
+format = "ruff.__main__:main"
 
 # ============================================================================
 # RUFF CONFIGURATION
@@ -226,16 +237,11 @@ ignore_missing_imports = true
 # PYTEST CONFIGURATION
 # ============================================================================
 [tool.pytest.ini_options]
-minversion = "7.0"
+minversion = "8.0"
 testpaths = ["tests"]
 pythonpath = ["src"]
-addopts = [
-    "-ra",
-    "--strict-markers",
-    "--strict-config",
-    "--showlocals",
-    "--tb=short",
-]
+addopts = "-q -x --maxfail=1 -n auto --dist=loadscope --timeout=10 --durations=10 --strict-markers"
+asyncio_mode = "auto"
 
 # Markers for organizing tests
 markers = [
@@ -244,6 +250,7 @@ markers = [
     "unit: marks tests as unit tests",
     "smoke: marks tests as smoke tests",
     "e2e: marks tests as end-to-end tests",
+    "no_network: marks tests that must not perform network calls",
 ]
 
 # Test discovery patterns

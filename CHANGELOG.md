@@ -7,6 +7,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- Docs: Lightspeed API overview with ERP mapping (`docs/lightspeed_api_overview.md`).
+- Test DX: Fast, deterministic pytest setup (pytest 8, xdist, timeout, randomly, freezegun) with `PYTEST_RUNNING` anti-hang fixture.
+- VS Code: Settings to use in-project `.venv` and auto test discovery on save.
+
+### Changed
+- Flask UI: Dashboard and Inventory templates/text adjusted to satisfy tests (labels, metrics visible).
+- CSV Ingest: Variant extraction prefers numeric sizes from SKU (e.g., `9.5`), better color parsing.
+- Inventory Service: Added compatibility service exposing expected API (apply batches, idempotent `sync_with_deduplication`, low-stock helpers).
+
+### Fixed
+- Import stability via legacy shims (e.g., `services.ls_api`) and Sheets credentials import path.
+- Type/lint issues in ingest and services modules.
+
+### CI/Security
+- Ensure Poetry in-project venv usage; test configuration consolidated in `pyproject.toml`.
+- Keep security scans and caches (prior hardening preserved).
+
 ### Planned
 - Email notifications for low stock alerts
 - Advanced reporting and analytics dashboard
