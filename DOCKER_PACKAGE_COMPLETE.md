@@ -29,18 +29,18 @@ Your DonXEra Inventory Manager is now fully packaged for Docker deployment!
 ```bash
 # Option 1: Build and run (recommended)
 docker build -t donxera-inventory .
-docker run -p 8080:8080 donxera-inventory
+docker run -p 8000:8000 donxera-inventory
 
 # Option 2: Use the build script
 chmod +x docker-build.sh
 ./docker-build.sh
-# Then: docker run -p 8080:8080 donxera-inventory
+# Then: docker run -p 8000:8000 donxera-inventory
 
 # Option 3: Verify first, then build
 chmod +x verify-docker-setup.sh
 ./verify-docker-setup.sh
 docker build -t donxera-inventory .
-docker run -p 8080:8080 donxera-inventory
+docker run -p 8000:8000 donxera-inventory
 ```
 
 ### Share with Others:
@@ -77,7 +77,7 @@ When someone runs your Docker container:
 
 1. **Starts Flask server** on port 8080
 2. **Loads demo data** - 60 streetwear products
-3. **Opens web interface** at http://localhost:8080
+3. **Opens web interface** at http://localhost:8000
 4. **Provides full features:**
    - Dashboard with inventory stats
    - Searchable product inventory
@@ -104,7 +104,7 @@ When someone runs your Docker container:
 - Only includes necessary files
 
 ### Easy to Run
-- Single command: `docker run -p 8080:8080 donxera-inventory`
+- Single command: `docker run -p 8000:8000 donxera-inventory`
 - No configuration needed
 - Works out of the box
 
@@ -127,8 +127,8 @@ When you have Docker available:
 
 - [ ] Build image: `docker build -t donxera-inventory .`
 - [ ] Check image size: `docker images donxera-inventory`
-- [ ] Run container: `docker run -p 8080:8080 donxera-inventory`
-- [ ] Open browser: http://localhost:8080
+- [ ] Run container: `docker run -p 8000:8000 donxera-inventory`
+- [ ] Open browser: http://localhost:8000
 - [ ] Verify dashboard loads
 - [ ] Check inventory page works
 - [ ] Test low stock alerts
@@ -151,15 +151,15 @@ Share these steps with anyone who wants to try your app:
 ```bash
 # If you have the tar file:
 docker load < donxera-inventory.tar
-docker run -p 8080:8080 donxera-inventory
+docker run -p 8000:8000 donxera-inventory
 
 # If you have the source code:
 docker build -t donxera-inventory .
-docker run -p 8080:8080 donxera-inventory
+docker run -p 8000:8000 donxera-inventory
 ```
 
 ### Open in Browser:
-- Navigate to: http://localhost:8080
+- Navigate to: http://localhost:8000
 - Explore the dashboard, inventory, and low stock pages
 - Try searching and filtering products
 - View Miami streetwear demo data
@@ -182,7 +182,7 @@ docker run -p 8080:8080 donxera-inventory
    docker tag donxera-inventory yourusername/donxera-inventory:latest
    docker push yourusername/donxera-inventory:latest
    ```
-   Users: `docker run -p 8080:8080 yourusername/donxera-inventory`
+   Users: `docker run -p 8000:8000 yourusername/donxera-inventory`
 
 2. **GitHub Releases** (attach tar file)
    - Build image

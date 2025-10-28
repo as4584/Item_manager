@@ -56,7 +56,7 @@ LS_X_API_TOKEN= # or OAuth envs if used
 LS_ACCOUNT_DOMAIN=
 
 # Acceptance criteria
-- Running the app serves on port 8080.
+- Running the app serves on port 8000.
 - Full sync pulls products/variants + current stock from Lightspeed to Google Sheet.
 - Uploading a Sales CSV or calling `/sales?from=YYYY-MM-DD&to=YYYY-MM-DD` updates on-hand, qty sold, and RestockList.
 - Pagination and rate limiting respected; sheet stays sorted after operations.

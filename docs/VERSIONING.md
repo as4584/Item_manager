@@ -248,7 +248,7 @@ git push origin v1.2.1
 
 ### Via API:
 ```bash
-curl http://localhost:8080/version
+curl http://localhost:8000/version
 # {"version": "1.0.0"}
 ```
 

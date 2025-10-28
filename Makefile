@@ -1,4 +1,4 @@
-.PHONY: install fmt lint test run clean help
+.PHONY: install fmt lint test run clean help format
 
 # Default target
 .DEFAULT_GOAL := help
@@ -14,6 +14,17 @@ TEST_DIR := tests
 
 # Help target
 help: ## Show this help message
+handout: ## Build professor handout PDFs (requires pandoc)
+	@echo "Building handout PDFs..."
+	@if command -v pandoc >/dev/null 2>&1; then \
+		mkdir -p docs/handout/pdf; \
+		pandoc docs/handout/IS344_IS218_Executive_Summary.md -o docs/handout/pdf/IS344_IS218_Executive_Summary.pdf; \
+		pandoc docs/handout/Demo_Instructions.md -o docs/handout/pdf/Demo_Instructions.pdf; \
+		pandoc docs/handout/Appendix_Lightspeed_API.md -o docs/handout/pdf/Appendix_Lightspeed_API.pdf; \
+		echo "✓ PDFs written to docs/handout/pdf"; \
+	else \
+		echo "pandoc not found; keeping Markdown sources in docs/handout"; \
+	fi
 	@echo "Available targets:"
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-15s\033[0m %s\n", $$1, $$2}'
 
@@ -27,23 +38,21 @@ install-dev: ## Install all dependencies including dev
 	$(POETRY) install --with dev --no-interaction --no-ansi
 	@echo "✓ All dependencies installed"
 
-fmt: ## Format code with black and isort
-	@echo "Formatting code with black..."
-	$(POETRY_RUN) black $(SRC_DIR) $(TEST_DIR)
-	@echo "Sorting imports with isort..."
-	$(POETRY_RUN) isort $(SRC_DIR) $(TEST_DIR)
-	@echo "✓ Code formatted"
+format: ## Auto-format using ruff
+	@echo "Formatting with ruff..."
+	$(POETRY_RUN) ruff format .
+	@echo "✓ Formatting complete"
 
 fmt-check: ## Check code formatting without making changes
 	@echo "Checking code format..."
 	$(POETRY_RUN) black --check $(SRC_DIR) $(TEST_DIR)
 	$(POETRY_RUN) isort --check-only $(SRC_DIR) $(TEST_DIR)
 
-lint: ## Run all linters (ruff, mypy)
+lint: ## Ruff + mypy
 	@echo "Running ruff..."
-	$(POETRY_RUN) ruff check $(SRC_DIR) $(TEST_DIR)
+	$(POETRY_RUN) ruff check .
 	@echo "Running mypy..."
-	$(POETRY_RUN) mypy $(SRC_DIR)
+	$(POETRY_RUN) mypy .
 	@echo "✓ Linting complete"
 
 lint-fix: ## Run ruff with auto-fix
@@ -51,9 +60,9 @@ lint-fix: ## Run ruff with auto-fix
 	$(POETRY_RUN) ruff check --fix $(SRC_DIR) $(TEST_DIR)
 	@echo "✓ Auto-fixes applied"
 
-test: ## Run tests with pytest
-	@echo "Running tests..."
-	$(POETRY_RUN) pytest $(TEST_DIR) -v
+test: ## Fast tests
+	@echo "Running fast tests (Demo Mode)..."
+	DEMO_MODE=true PYTEST_RUNNING=1 $(POETRY_RUN) pytest -q -x -n auto --maxfail=1
 	@echo "✓ Tests complete"
 
 test-cov: ## Run tests with coverage report
@@ -70,9 +79,8 @@ security: ## Run security checks with bandit
 	$(POETRY_RUN) bandit -r $(SRC_DIR) -c pyproject.toml
 	@echo "✓ Security checks complete"
 
-run: ## Run the application
-	@echo "Starting inventory sync application..."
-	$(POETRY_RUN) python -m src.cli
+run: ## Run Flask in demo mode on 8000
+	DEMO_MODE=true $(POETRY_RUN) python -m flask --app src.app:create_app run --port 8000
 
 run-dev: ## Run the application in development mode
 	@echo "Starting inventory sync application (dev mode)..."

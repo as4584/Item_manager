@@ -1,36 +1,75 @@
-[![Security Scanning](https://github.com/as4584/Item_manager/actions/workflows/security.yml/badge.svg)](../../actions/workflows/security.yml)
+![CI](https://github.com/as4584/Item_manager/actions/workflows/ci.yml/badge.svg) ![Security](https://github.com/as4584/Item_manager/actions/workflows/security.yml/badge.svg)
 
-# 🖤 DonXEra Inventory Manager
+# DonxEra Inventory Manager
 
-A minimalist inventory management system for sneaker and streetwear shops. Clean design, powerful features, easy to use.
+A self-managing inventory system for a sneaker/clothing shop.
+- POS: Lightspeed Retail X‑Series
+- Ops dashboard: Google Sheets
+- App: Flask + Pandas, with Demo Mode for credential‑free runs
+
+## 📱 Quick Access (QR Codes)
+
+Scan these from your phone to open the app quickly:
+
+| Target | QR Code |
+|---|---|
+| Local Dev (http://localhost:8000) | <img alt="QR Localhost 8000" src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=http%3A%2F%2Flocalhost%3A8000" width="140" height="140" /> |
+| Public (ngrok) | <img alt="QR Public ngrok" src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https%3A%2F%2Funenriching-janice-unpermanent.ngrok-free.dev" width="140" height="140" /> |
+
+Notes:
+- The public QR encodes your current `NGROK_DOMAIN` from `.env`. Update the link above if the domain changes.
+- Localhost QR works only if your phone is on the same network and can reach your machine via port 8000.
+
+## Quickstart (Demo Mode)
+
+```bash
+cp .env.example .env
+export DEMO_MODE=true
+poetry install
+poetry run python -m flask --app src.app:create_app run --port 8000
+```
+
+- Open: http://localhost:8000
+- Health: http://localhost:8000/health (shows demo_mode, sheets_configured)
+- Demo data: sample_data/lightspeed/*.json (no network calls)
+
+Optional dev runner
+```bash
+PORT=8000 poetry run python scripts/run_local.py
+```
+
+## Screenshots
+- Dashboard: ![Dashboard](docs/assets/dashboard.png)
+- Health: ![Health](docs/assets/health.png)
 
 ---
 
-## 🚀 Quick Start (Docker) - **RECOMMENDED**
+## 🚀 Quick Start (Docker)
 
 **Run the demo with one command:**
 
 ```bash
-docker run -p 8080:8080 donxera-inventory
+docker build -f deploy/docker/Dockerfile -t donxera-inventory .
+docker run -p 8000:8000 -e DEMO_MODE=true donxera-inventory
 ```
 
-Then open: **http://localhost:8080**
+Then open: **http://localhost:8000**
 
 ### Build from Source
 
 ```bash
 # 1. Build the image
-docker build -t donxera-inventory .
+docker build -f deploy/docker/Dockerfile -t donxera-inventory .
 
 # 2. Run the container
-docker run -p 8080:8080 donxera-inventory
+docker run -p 8000:8000 -e DEMO_MODE=true donxera-inventory
 
 # Or use the build script
 chmod +x docker-build.sh
 ./docker-build.sh
 ```
 
-📖 **See [DOCKER_README.md](DOCKER_README.md) for complete Docker documentation**
+📖 See deploy/docker/README.md for complete Docker documentation
 
 ---
 
@@ -49,11 +88,8 @@ curl -sSL https://install.python-poetry.org | python3 -
 # 2. Install dependencies
 poetry install
 
-# 3. Run in demo mode
-poetry run python src/app.py
-
-# Or use Flask directly
-poetry run flask --app src/app run --port 5000
+# 3. Run in demo mode (Flask)
+poetry run python -m flask --app src.app:create_app run --port 8000
 
 # 4. Open browser
 # Navigate to http://localhost:5000
@@ -62,23 +98,20 @@ poetry run flask --app src/app run --port 5000
 ### Development Commands
 
 ```bash
-# Run tests
-poetry run pytest
+make test
 
-# Run tests with coverage
+# Run tests with coverage (optional)
 poetry run pytest --cov=src --cov-report=term-missing
 
-# Run linting
-poetry run ruff check src/ tests/
+make lint
 
-# Run type checking
-poetry run mypy src/ --strict
+# Type checking (also part of make lint)
+poetry run mypy .
 
 # Run security scan
 poetry run bandit -r src/
 
-# Format code (auto-fix)
-poetry run ruff check src/ tests/ --fix
+make format
 
 ### Fast test loop (deterministic, no hangs)
 
@@ -246,10 +279,10 @@ inventory_manager/
 ### Running the Application
 
 ```bash
-python app.py
+poetry run python -m flask --app src.app:create_app run --port 8000
 ```
 
-The application will be available at `http://localhost:8080`
+The application will be available at `http://localhost:8000`
 
 ## 📊 Google Sheets Structure
 
@@ -371,7 +404,7 @@ pytest -v
 # Flask Configuration
 FLASK_ENV=development
 SECRET_KEY=change-this-in-production
-PORT=8080
+PORT=8000
 
 # Google Sheets Configuration
 GOOGLE_SERVICE_ACCOUNT_JSON=./service_account.json

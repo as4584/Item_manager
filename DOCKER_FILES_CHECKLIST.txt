@@ -42,7 +42,7 @@ IMAGE SPECIFICATIONS:
 - Products: 60 pre-loaded
 
 ONE-COMMAND RUN:
-docker run -p 8080:8080 donxera-inventory
+docker run -p 8000:8000 donxera-inventory
 
 BUILD COMMAND:
 docker build -t donxera-inventory .

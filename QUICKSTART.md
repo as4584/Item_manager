@@ -3,10 +3,10 @@
 ## One-Command Demo
 
 ```bash
-docker run -p 8080:8080 donxera-inventory
+docker run -p 8000:8000 donxera-inventory
 ```
 
-Open: **http://localhost:8080**
+Open: **http://localhost:8000**
 
 ---
 
@@ -17,10 +17,10 @@ Open: **http://localhost:8080**
 docker build -t donxera-inventory .
 
 # Run
-docker run -p 8080:8080 donxera-inventory
+docker run -p 8000:8000 donxera-inventory
 
 # Run in background
-docker run -d -p 8080:8080 --name donxera donxera-inventory
+docker run -d -p 8000:8000 --name donxera donxera-inventory
 
 # View logs
 docker logs donxera
@@ -35,7 +35,7 @@ docker stop donxera
 
 ```bash
 pip install -r requirements.txt
-DEMO_MODE=true PORT=8080 python3 app.py
+DEMO_MODE=true PORT=8000 python3 app.py
 ```
 
 ---
@@ -78,7 +78,7 @@ docker save donxera-inventory > donxera.tar
 
 # Import on another machine
 docker load < donxera.tar
-docker run -p 8080:8080 donxera-inventory
+docker run -p 8000:8000 donxera-inventory
 ```
 
 ---

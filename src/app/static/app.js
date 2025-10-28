@@ -1,4 +1,4 @@
-// Miami Inventory Manager - Custom JavaScript
+// DonxEra - Custom JavaScript
 
 // Show alert function
 function showAlert(message, type = 'info') {

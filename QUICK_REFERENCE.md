@@ -28,7 +28,7 @@ make test-cov
 python app.py
 
 # Application will be available at:
-# http://localhost:8080
+# http://localhost:8000
 ```
 
 ---
@@ -143,17 +143,17 @@ FLASK_ENV=development
 ## 📊 Key Routes
 
 ### Dashboard
-- **URL:** `http://localhost:8080/`
+- **URL:** `http://localhost:8000/`
 - **Purpose:** Overview tiles, key metrics
 - **Features:** Total SKUs, on-hand inventory, low stock count
 
 ### Inventory
-- **URL:** `http://localhost:8080/inventory`
+- **URL:** `http://localhost:8000/inventory`
 - **Purpose:** Full inventory table
 - **Features:** Search, sort, filter, export CSV
 
 ### Low Stock
-- **URL:** `http://localhost:8080/low-stock`
+- **URL:** `http://localhost:8000/low-stock`
 - **Purpose:** Items below threshold
 - **Features:** Configurable threshold, restock suggestions
 

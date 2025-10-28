@@ -38,10 +38,10 @@ cd /root/inventory_manager
 docker build -t donxera-inventory .
 
 # 3. Run the container
-docker run -p 8080:8080 donxera-inventory
+docker run -p 8000:8000 donxera-inventory
 
 # 4. Open browser
-# http://localhost:8080
+# http://localhost:8000
 ```
 
 **OR** use the automated script:
@@ -62,7 +62,7 @@ zip -r donxera-inventory.zip . -x "*.git*" "*__pycache__*" "*venv*"
 unzip donxera-inventory.zip
 cd donxera-inventory
 docker build -t donxera-inventory .
-docker run -p 8080:8080 donxera-inventory
+docker run -p 8000:8000 donxera-inventory
 ```
 
 ### Option 2: Share Docker Image
@@ -74,7 +74,7 @@ docker save donxera-inventory | gzip > donxera-inventory.tar.gz
 # Send the .tar.gz file (~50-80MB compressed)
 # Others load it:
 gunzip -c donxera-inventory.tar.gz | docker load
-docker run -p 8080:8080 donxera-inventory
+docker run -p 8000:8000 donxera-inventory
 ```
 
 ### Option 3: Docker Hub (Public)
@@ -84,7 +84,7 @@ docker tag donxera-inventory yourusername/donxera-inventory:latest
 docker push yourusername/donxera-inventory:latest
 
 # Anyone can run:
-docker run -p 8080:8080 yourusername/donxera-inventory
+docker run -p 8000:8000 yourusername/donxera-inventory
 ```
 
 ---
@@ -201,9 +201,9 @@ Include these in your share message:
 
 **Quick Start:**
 ```bash
-docker run -p 8080:8080 donxera-inventory
+docker run -p 8000:8000 donxera-inventory
 ```
-Then open: http://localhost:8080
+Then open: http://localhost:8000
 
 **Requirements:**
 - Docker installed
@@ -248,8 +248,8 @@ For your reference:
 ### For Testing:
 1. Run `./verify-docker-setup.sh` to check everything
 2. Build image: `docker build -t donxera-inventory .`
-3. Run container: `docker run -p 8080:8080 donxera-inventory`
-4. Test in browser: http://localhost:8080
+3. Run container: `docker run -p 8000:8000 donxera-inventory`
+4. Test in browser: http://localhost:8000
 
 ### For Sharing:
 1. Choose distribution method (source/image/hub)
@@ -294,11 +294,11 @@ Your DonXEra Inventory Manager is now:
 - `./docker-build.sh` - Build image
 
 **Endpoints:**
-- http://localhost:8080/ - Dashboard
-- http://localhost:8080/inventory - Full inventory
-- http://localhost:8080/low-stock - Alerts
-- http://localhost:8080/health - Health check
-- http://localhost:8080/version - Version info
+- http://localhost:8000/ - Dashboard
+- http://localhost:8000/inventory - Full inventory
+- http://localhost:8000/low-stock - Alerts
+- http://localhost:8000/health - Health check
+- http://localhost:8000/version - Version info
 
 ---
 

@@ -249,7 +249,7 @@ make test-cov       # Run tests with coverage
 make security       # Security checks
 
 # Run application
-python app.py       # Port 8080
+python app.py       # Port 8000
 
 # CI checks locally
 make ci             # Run all checks

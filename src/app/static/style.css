@@ -307,11 +307,48 @@ body {
     border-color: #e5e5e5 !important;
 }
 
-.bg-secondary {
-    background: var(--bg-secondary) !important;
-    color: var(--text-light) !important;
-    border-color: var(--border) !important;
+/* Category chips: remove gray background, use subtle outline + brand color text */
+.badge-category {
+    background: transparent !important;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    border-radius: 999px;
 }
+
+.badge-category.cat-sneakers {
+    color: #2563eb !important; /* blue */
+    border: 1px solid rgba(37, 99, 235, 0.35) !important;
+}
+
+.badge-category.cat-clothing {
+    color: #7c3aed !important; /* violet */
+    border: 1px solid rgba(124, 58, 237, 0.35) !important;
+}
+
+.badge-category.cat-accessories {
+    color: #0d9488 !important; /* teal */
+    border: 1px solid rgba(13, 148, 136, 0.35) !important;
+}
+
+/* Minimal category icons */
+.icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1rem;
+    height: 1rem;
+    border-radius: 999px;
+    font-size: 0.65rem;
+    font-weight: 800;
+    color: #ffffff;
+    margin-right: 0.4rem;
+    line-height: 1;
+}
+
+.icon.cat-sneakers { background: #2563eb; }
+.icon.cat-clothing { background: #7c3aed; }
+.icon.cat-accessories { background: #0d9488; }
 
 .bg-info {
     background: #f0f9ff !important;
@@ -460,6 +497,30 @@ i.bi {
 
 .table-warning {
     background: #fffbeb !important;
+}
+
+/* Low Stock Showcase chips */
+.chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.4rem 0.75rem;
+    border-radius: 999px;
+    font-weight: 600;
+    font-size: 0.8rem;
+    border: 1px solid transparent;
+}
+
+.chip-warning {
+    background: #fffbeb;
+    color: #92400e;
+    border-color: #fde68a;
+}
+
+.chip-danger {
+    background: #fef2f2;
+    color: #991b1b;
+    border-color: #fecaca;
 }
 
 
@@ -812,6 +873,251 @@ i.bi {
         opacity: 1;
         transform: translateY(0);
     }
+}
+
+/* ========================================
+   CATEGORY FILTER BUTTONS
+   ======================================== */
+
+.category-filter-buttons {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border);
+}
+
+.btn-category {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.65rem 1.25rem;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--bg-main);
+    color: var(--text-light);
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    letter-spacing: 0.2px;
+}
+
+.btn-category i {
+    font-size: 1rem;
+    opacity: 0.7;
+    transition: opacity 0.2s ease;
+}
+
+.btn-category:hover {
+    border-color: var(--primary);
+    color: var(--primary);
+    background: var(--bg-secondary);
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px var(--shadow);
+}
+
+.btn-category:hover i {
+    opacity: 1;
+}
+
+.btn-category.active {
+    background: var(--primary);
+    border-color: var(--primary);
+    color: white;
+    box-shadow: 0 2px 8px var(--shadow-hover);
+}
+
+.btn-category.active i {
+    opacity: 1;
+}
+
+/* Mobile responsive category buttons */
+@media (max-width: 575.98px) {
+    .btn-category {
+        flex: 1 1 calc(50% - 0.375rem);
+        justify-content: center;
+        padding: 0.5rem 0.75rem;
+        font-size: 0.85rem;
+    }
+}
+
+/* ========================================
+   SIZE DROPDOWN (DESKTOP HOVER)
+   ======================================== */
+
+.size-badge {
+    font-weight: 600;
+    color: var(--text);
+}
+
+.inventory-row {
+    position: relative;
+}
+
+.size-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.75rem;
+    min-width: 200px;
+    box-shadow: 0 4px 12px var(--shadow-hover);
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.2s ease, visibility 0.2s ease;
+    margin-top: 0.25rem;
+}
+
+.inventory-row:hover .size-dropdown {
+    opacity: 1;
+    visibility: visible;
+}
+
+.size-dropdown-header {
+    font-weight: 600;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-light);
+    margin-bottom: 0.5rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border);
+}
+
+.size-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+}
+
+.size-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.4rem 0.5rem;
+    border-radius: 4px;
+    background: var(--bg-secondary);
+    transition: background 0.2s ease;
+}
+
+.size-item:hover {
+    background: var(--accent);
+}
+
+.size-item.low-stock {
+    background: #fffbeb;
+    border-left: 2px solid #f59e0b;
+}
+
+.size-item.out-of-stock {
+    background: #fef2f2;
+    border-left: 2px solid #ef4444;
+    opacity: 0.6;
+}
+
+.size-label {
+    font-weight: 600;
+    color: var(--primary);
+    font-size: 0.85rem;
+}
+
+.size-qty {
+    font-size: 0.75rem;
+    color: var(--text-light);
+    font-weight: 500;
+}
+
+.size-item.low-stock .size-qty {
+    color: #92400e;
+    font-weight: 600;
+}
+
+.size-item.out-of-stock .size-qty {
+    color: #991b1b;
+    font-weight: 600;
+}
+
+/* ========================================
+   MOBILE SIZE DROPDOWN (TAP TO EXPAND)
+   ======================================== */
+
+.size-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    cursor: pointer;
+    font-weight: 600;
+    color: var(--primary);
+    transition: color 0.2s ease;
+}
+
+.size-toggle:hover {
+    color: var(--secondary);
+}
+
+.size-toggle i {
+    font-size: 0.75rem;
+    transition: transform 0.2s ease;
+}
+
+.mobile-sizes-dropdown {
+    margin-top: 0.75rem;
+    padding: 0.75rem;
+    background: var(--bg-secondary);
+    border-radius: 6px;
+    border: 1px solid var(--border);
+}
+
+.mobile-sizes-header {
+    font-weight: 600;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-light);
+    margin-bottom: 0.5rem;
+}
+
+.mobile-size-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.mobile-size-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem;
+    background: white;
+    border-radius: 4px;
+    border: 1px solid var(--border);
+}
+
+.mobile-size-item.low-stock {
+    border-left: 3px solid #f59e0b;
+    background: #fffbeb;
+}
+
+.mobile-size-item.out-of-stock {
+    border-left: 3px solid #ef4444;
+    background: #fef2f2;
+    opacity: 0.7;
+}
+
+.mobile-size-item .size-label {
+    font-weight: 600;
+    font-size: 0.85rem;
+    color: var(--primary);
+}
+
+.mobile-size-item .size-qty {
+    font-size: 0.8rem;
+    font-weight: 600;
 }
 
 /* ========================================

@@ -301,7 +301,7 @@ pip-audit
 
 🔧 **OWASP ZAP** - Web app security scanner (run before major releases)
 ```bash
-docker run -t owasp/zap2docker-stable zap-baseline.py -t http://localhost:8080
+docker run -t owasp/zap2docker-stable zap-baseline.py -t http://localhost:8000
 ```
 
 🔧 **Grype** - Container vulnerability scanner (if Docker deployed)

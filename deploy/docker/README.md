@@ -7,10 +7,10 @@ A minimalist inventory management system for streetwear and sneaker shops. Clean
 Run the demo with one command:
 
 ```bash
-docker run -p 8080:8080 donxera-inventory
+docker run -p 8000:8000 donxera-inventory
 ```
 
-Then open your browser to: **http://localhost:8080**
+Then open your browser to: **http://localhost:8000**
 
 ---
 
@@ -33,18 +33,18 @@ docker build -t donxera-inventory .
 ### Run the Container
 
 ```bash
-# Run on default port 8080
-docker run -p 8080:8080 donxera-inventory
+# Run on default port 8000
+docker run -p 8000:8000 donxera-inventory
 
 # Or run on a different port (e.g., 3000)
-docker run -p 3000:8080 donxera-inventory
+docker run -p 3000:8000 donxera-inventory
 ```
 
 ### Run in Background
 
 ```bash
 # Detached mode (runs in background)
-docker run -d -p 8080:8080 --name donxera donxera-inventory
+docker run -d -p 8000:8000 --name donxera donxera-inventory
 
 # View logs
 docker logs donxera
@@ -81,21 +81,21 @@ docker rm donxera
 ## 📱 Usage Examples
 
 ### View Dashboard
-Navigate to `http://localhost:8080/` to see:
+Navigate to `http://localhost:8000/` to see:
 - Product types count
 - Items in stock
 - Low stock alerts
 - Quick actions
 
 ### Browse Inventory
-Go to `http://localhost:8080/inventory` to:
+Go to `http://localhost:8000/inventory` to:
 - Search products by name, code, or category
 - Filter by category (Clothing, Sneakers, Accessories)
 - Filter by stock level (In Stock, Low Stock, Out of Stock)
 - Sort by any column
 
 ### Check Low Stock
-Visit `http://localhost:8080/low-stock` to:
+Visit `http://localhost:8000/low-stock` to:
 - See items below threshold (default: 5 units)
 - View priority levels (Critical, High, Medium)
 - Export restock list
@@ -104,13 +104,13 @@ Visit `http://localhost:8080/low-stock` to:
 
 ```bash
 # Health check
-curl http://localhost:8080/health
+curl http://localhost:8000/health
 
 # Version info
-curl http://localhost:8080/version
+curl http://localhost:8000/version
 
 # Update stock (demo mode)
-curl -X POST http://localhost:8080/update-stock \
+curl -X POST http://localhost:8000/update-stock \
   -H "Content-Type: application/json" \
   -d '{"sku": "HS-001-M", "quantity": 10}'
 ```
@@ -123,17 +123,17 @@ curl -X POST http://localhost:8080/update-stock \
 
 ```bash
 # Run with custom settings
-docker run -p 8080:8080 \
+docker run -p 8000:8000 \
   -e DEMO_MODE=true \
-  -e PORT=8080 \
+  -e PORT=8000 \
   donxera-inventory
 ```
 
 ### Port Mapping
 
 ```bash
-# Map container port 8080 to host port 3000
-docker run -p 3000:8080 donxera-inventory
+# Map container port 8000 to host port 3000
+docker run -p 3000:8000 donxera-inventory
 # Access at: http://localhost:3000
 ```
 
@@ -162,11 +162,11 @@ docker run -p 3000:8080 donxera-inventory
 
 ### Port Already in Use
 ```bash
-# Check what's using port 8080
-lsof -i :8080
+# Check what's using port 8000
+lsof -i :8000
 
 # Use a different port
-docker run -p 8181:8080 donxera-inventory
+docker run -p 8181:8000 donxera-inventory
 ```
 
 ### Container Won't Start
@@ -184,7 +184,7 @@ docker build --no-cache -t donxera-inventory .
 ### Can't Access in Browser
 - Make sure container is running: `docker ps`
 - Check correct port mapping: `docker ps` shows port mapping
-- Try `http://127.0.0.1:8080` instead of `localhost`
+- Try `http://127.0.0.1:8000` instead of `localhost`
 
 ---
 
@@ -228,7 +228,7 @@ docker load < donxera-inventory.tar
 gunzip -c donxera-inventory.tar.gz | docker load
 
 # Run it
-docker run -p 8080:8080 donxera-inventory
+docker run -p 8000:8000 donxera-inventory
 ```
 
 ### Push to Docker Hub (Optional)
@@ -243,7 +243,7 @@ docker login
 docker push yourusername/donxera-inventory:latest
 
 # Others can pull and run
-docker run -p 8080:8080 yourusername/donxera-inventory:latest
+docker run -p 8000:8000 yourusername/donxera-inventory:latest
 ```
 
 ---

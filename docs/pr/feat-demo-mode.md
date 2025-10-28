@@ -18,8 +18,8 @@ How to run:
 ```bash
 cp .env.example .env
 export DEMO_MODE=true
-poetry install --sync
-poetry run python app.py
+poetry install
+poetry run python -m flask --app src.app:create_app run --port 8000
 ```
 
 Tests:
@@ -27,6 +27,15 @@ Tests:
 ```bash
 DEMO_MODE=true PYTEST_RUNNING=1 poetry run pytest -q
 ```
+
+Labels: `feature`, `demo`, `ready-for-review`  •  Assignees: @as4584
+
+Screenshots:
+
+- Dashboard: ![Dashboard](../assets/dashboard.png)
+- Health: ![Health](../assets/health.png)
+
+See also: [CHANGELOG Unreleased](../../CHANGELOG.md#unreleased)
 
 Risks:
 - Low (Demo-only code paths)

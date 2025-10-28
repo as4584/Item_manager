@@ -26,9 +26,9 @@ if [ $? -eq 0 ]; then
     echo "✅ Build successful!"
     echo ""
     echo "🚀 To run the container:"
-    echo "   docker run -p 8080:8080 donxera-inventory"
+    echo "   docker run -p 8000:8000 donxera-inventory"
     echo ""
-    echo "🌐 Then open: http://localhost:8080"
+    echo "🌐 Then open: http://localhost:8000"
     echo ""
     echo "📖 For more options, see DOCKER_README.md"
 else

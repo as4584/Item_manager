@@ -68,6 +68,10 @@ dmypy.json
 service_account.json
 *-credentials.json
 *.json.secret
+# ngrok and other tokens
+.ngrok2/
+*ngrok*.yml
+*token*
 
 # Logs
 logs/
