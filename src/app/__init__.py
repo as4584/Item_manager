@@ -1,8 +1,10 @@
-from flask import Flask, render_template, jsonify, request
-import os
+import contextlib
 import json
+import os
+from typing import Any, Dict, List
+
 import pandas as pd
-from typing import List, Dict, Any
+from flask import Flask, jsonify, render_template, request
 
 # Expose SheetsRepository symbol for test patching
 try:
@@ -15,10 +17,8 @@ def create_app() -> Flask:
 	app = Flask(__name__, static_folder='static', template_folder='templates')
 	# Ensure template changes are reflected without manual restarts
 	app.config['TEMPLATES_AUTO_RELOAD'] = True
-	try:
+	with contextlib.suppress(Exception):
 		app.jinja_env.auto_reload = True
-	except Exception:
-		pass
 
 	@app.route('/')
 	def index():
@@ -45,7 +45,7 @@ def create_app() -> Flask:
 				except Exception:
 					CSVIngestService = None  # type: ignore
 
-			items: List[Dict[str, Any]] = []
+			items: list[dict[str, Any]] = []
 			csv_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), 'sample_data', 'products.csv')
 			if CSVIngestService and os.path.exists(csv_path):
 				try:
@@ -182,13 +182,13 @@ def create_app() -> Flask:
 		# Load demo fixtures
 		root = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
 		fx_dir = os.path.join(root, 'sample_data', 'lightspeed')
-		with open(os.path.join(fx_dir, 'products.json'), 'r') as f:
+		with open(os.path.join(fx_dir, 'products.json')) as f:
 			products = json.load(f).get('data', [])
-		with open(os.path.join(fx_dir, 'inventory.json'), 'r') as f:
+		with open(os.path.join(fx_dir, 'inventory.json')) as f:
 			inventory = json.load(f).get('data', [])
 
 		# Normalize into Inventory sheet schema
-		rows: List[Dict[str, Any]] = []
+		rows: list[dict[str, Any]] = []
 		prod_by_id = {p.get('id'): p for p in products}
 		for inv in inventory:
 			pid = inv.get('product_id') or inv.get('variant_id')  # demo uses variant_id

@@ -2,8 +2,9 @@
 Demo data loader for testing the Inventory Manager UI.
 Loads sample CSV data into an in-memory DataFrame for testing.
 """
-import pandas as pd
 from pathlib import Path
+
+import pandas as pd
 
 # Global in-memory inventory storage for demo mode
 DEMO_INVENTORY = None
@@ -11,10 +12,10 @@ DEMO_INVENTORY = None
 def load_demo_data():
     """Load sample inventory data from CSV for demo mode."""
     global DEMO_INVENTORY
-    
+
     # Path to sample_data at repo root (three levels up from src/ingestion)
     csv_path = Path(__file__).parent.parent.parent / 'sample_data' / 'products.csv'
-    
+
     if csv_path.exists():
         DEMO_INVENTORY = pd.read_csv(csv_path)
         print(f"✅ Loaded {len(DEMO_INVENTORY)} demo products")
@@ -24,7 +25,7 @@ def load_demo_data():
         DEMO_INVENTORY = pd.DataFrame({
             'ItemID': [1001, 1002, 1003, 1004, 1005],
             'SKU': ['JD1-BLK-8', 'JD1-BLK-9', 'JD1-BLK-10', 'AF1-WHT-8', 'AF1-WHT-9'],
-            'Name': ['Air Jordan 1 Black', 'Air Jordan 1 Black', 'Air Jordan 1 Black', 
+            'Name': ['Air Jordan 1 Black', 'Air Jordan 1 Black', 'Air Jordan 1 Black',
                      'Air Force 1 White', 'Air Force 1 White'],
             'Category': ['Sneakers'] * 5,
             'Color': ['Black', 'Black', 'Black', 'White', 'White'],
@@ -51,7 +52,7 @@ def update_demo_stock(item_id: int, new_qty: int):
     global DEMO_INVENTORY
     if DEMO_INVENTORY is None:
         load_demo_data()
-    
+
     mask = DEMO_INVENTORY['ItemID'] == item_id
     if mask.any():
         old_qty = DEMO_INVENTORY.loc[mask, 'QtyOnHand'].values[0]

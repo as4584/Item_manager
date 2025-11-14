@@ -4,18 +4,17 @@ Delegates or implements operations using the domain inventory logic.
 """
 from __future__ import annotations
 
-from dataclasses import replace
-from typing import Dict, Optional, Set
-from datetime import datetime
 import hashlib
+from dataclasses import replace
+
 import pandas as pd
 
+from src.domain.exceptions import InvalidInventorySchemaError, NegativeInventoryError
 from src.domain.inventory import InventoryService as DomainInventoryService
-from src.domain.exceptions import NegativeInventoryError, InvalidInventorySchemaError
 from src.domain.models import Product, Sale
 
 
-def generate_sale_hash(sale: Dict) -> str:
+def generate_sale_hash(sale: dict) -> str:
     """Generate a stable hash for a sale dict for deduplication."""
     # Normalize fields that define a sale identity
     sku = str(sale.get("SKU", "")).strip().upper()
@@ -54,7 +53,7 @@ class InventoryService:
         df_sales = sales_df.copy()
 
         # Deduplicate by SaleHash if present
-        applied_hashes: Set[str] = set()
+        applied_hashes: set[str] = set()
 
         for _, row in df_sales.iterrows():
             sku = row.get("SKU")
@@ -143,7 +142,7 @@ class InventoryService:
 
     def generate_restock_recommendations(self, inventory_df: pd.DataFrame) -> pd.DataFrame:
         if inventory_df.empty:
-            return pd.DataFrame(columns=["SKU", "RecommendedQty", "Reason"]) 
+            return pd.DataFrame(columns=["SKU", "RecommendedQty", "Reason"])
         df = inventory_df.copy()
         qty_sold = (
             pd.to_numeric(df["QtySold"], errors="coerce").fillna(0)
@@ -166,7 +165,7 @@ class InventoryService:
         if missing:
             raise InvalidInventorySchemaError(f"Missing required columns: {missing}")
 
-    def validate_prices(self, df: pd.DataFrame) -> Dict[str, pd.DataFrame]:
+    def validate_prices(self, df: pd.DataFrame) -> dict[str, pd.DataFrame]:
         prices = (
             pd.to_numeric(df["RetailPrice"], errors="coerce").fillna(0)
             if "RetailPrice" in df.columns

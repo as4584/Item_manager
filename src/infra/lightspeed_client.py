@@ -10,21 +10,20 @@ Implements the Gateway pattern to hide external API complexity:
 
 This adapter translates Lightspeed's API format to our domain model.
 """
-import time
-import os
 import json
-import requests
-from typing import Dict, List, Any, Optional, Generator, Union
-from datetime import datetime
 import logging
+import os
+import time
+from collections.abc import Generator
+from typing import Any
+
+import requests
 
 from .exceptions import (
     LightspeedAPIError,
     LightspeedAuthError,
-    LightspeedRateLimitError,
     LightspeedServerError,
 )
-
 
 logger = logging.getLogger(__name__)
 
@@ -32,14 +31,14 @@ logger = logging.getLogger(__name__)
 class LightspeedGateway:
     """
     Gateway to Lightspeed X-Series API.
-    
+
     Hides complexity of:
     - Pagination
     - Rate limiting
     - Retry logic with exponential backoff
     - Error handling
     """
-    
+
     def __init__(
         self,
         api_token: str,
@@ -49,7 +48,7 @@ class LightspeedGateway:
     ) -> None:
         """
         Initialize Lightspeed Gateway.
-        
+
         Args:
             api_token: Lightspeed API token
             account_domain: Account domain (e.g., 'mystore')
@@ -73,7 +72,7 @@ class LightspeedGateway:
             'Content-Type': 'application/json',
             'Accept': 'application/json',
         })
-    
+
     def _sleep(self, seconds: float) -> None:
         """Sleep helper that is a no-op in demo/test mode."""
         if self.demo_mode:
@@ -83,20 +82,20 @@ class LightspeedGateway:
     def _make_request_with_retry(
         self,
         endpoint: str,
-        params: Optional[Dict[str, Any]] = None,
+        params: dict[str, Any] | None = None,
         method: str = 'GET',
-    ) -> Optional[Dict[str, Any]]:
+    ) -> dict[str, Any] | None:
         """
         Make HTTP request with retry logic and exponential backoff.
-        
+
         Args:
             endpoint: API endpoint (without base URL)
             params: Query parameters
             method: HTTP method
-            
+
         Returns:
             Response JSON or None
-            
+
         Raises:
             LightspeedAPIError: After max retries exceeded
             LightspeedAuthError: On authentication failure (401)
@@ -117,7 +116,7 @@ class LightspeedGateway:
                 'sample_data', 'lightspeed', filename
             )
             try:
-                with open(fixture_path, 'r') as f:
+                with open(fixture_path) as f:
                     contents = json.load(f)
             except FileNotFoundError:
                 return {'data': []}
@@ -132,7 +131,7 @@ class LightspeedGateway:
 
             # Apply simple pagination slicing based on params (limit/offset)
             offset = 0
-            limit: Optional[int] = None
+            limit: int | None = None
             if params:
                 try:
                     offset = int(params.get('offset', 0))
@@ -144,36 +143,33 @@ class LightspeedGateway:
                 except Exception:
                     limit = None
 
-            if limit is None:
-                sliced = data[offset:]
-            else:
-                sliced = data[offset: offset + limit]
+            sliced = data[offset:] if limit is None else data[offset:offset + limit]
 
             return {'data': sliced}
 
         url = f"{self.base_url}/{endpoint}"
         params = params or {}
-        
+
         for attempt in range(self.max_retries):
             try:
                 # Make request
                 response = self.session.get(url, params=params) if method == 'GET' else self.session.request(method, url, params=params)
-                
+
                 # Handle rate limiting (429)
                 if response.status_code == 429:
                     retry_after = int(response.headers.get('Retry-After', 60))
                     logger.warning(f"Rate limited. Retrying after {retry_after}s")
                     self._sleep(retry_after)
                     continue
-                
+
                 # Rate limiting for normal requests (after successful response)
                 if response.status_code == 200 and self.rate_limit_delay > 0:
                     self._sleep(self.rate_limit_delay)
-                
+
                 # Handle authentication errors (401)
                 if response.status_code == 401:
                     raise LightspeedAuthError("Authentication failed. Invalid token.")
-                
+
                 # Handle server errors (5xx) - retry
                 if 500 <= response.status_code < 600:
                     if attempt < self.max_retries - 1:
@@ -188,17 +184,17 @@ class LightspeedGateway:
                         raise LightspeedServerError(
                             f"Server error {response.status_code} after {self.max_retries} attempts"
                         )
-                
+
                 # Handle 404
                 if response.status_code == 404:
                     return None
-                
+
                 # Raise for other HTTP errors
                 response.raise_for_status()
-                
+
                 # Success
                 return response.json()
-                
+
             except (requests.exceptions.ConnectionError, requests.exceptions.Timeout) as e:
                 if attempt < self.max_retries - 1:
                     backoff = 2 ** attempt  # Exponential backoff
@@ -212,7 +208,7 @@ class LightspeedGateway:
                     raise LightspeedAPIError(
                         f"Connection failed after {self.max_retries} attempts: {e}"
                     )
-            
+
             except requests.exceptions.HTTPError as e:
                 # Already handled above, but catch any others
                 if attempt < self.max_retries - 1:
@@ -220,14 +216,14 @@ class LightspeedGateway:
                     self._sleep(backoff)
                     continue
                 raise LightspeedAPIError(f"HTTP error: {e}")
-        
+
         # Should not reach here, but satisfy type checker
         raise LightspeedAPIError(f"Failed after {self.max_retries} attempts")
-    
+
     def _handle_rate_limit(self, response: requests.Response) -> None:
         """
         Handle rate limiting based on response headers.
-        
+
         Args:
             response: HTTP response object
         """
@@ -235,48 +231,47 @@ class LightspeedGateway:
             retry_after = int(response.headers.get('Retry-After', 60))
             logger.info(f"Rate limited. Waiting {retry_after} seconds...")
             self._sleep(retry_after)
-    
+
     def _paginate(
         self,
         endpoint: str,
-        params: Optional[Dict[str, Any]] = None,
+        params: dict[str, Any] | None = None,
         page_size: int = 250,
-    ) -> Generator[Dict[str, Any], None, None]:
+    ) -> Generator[dict[str, Any], None, None]:
         """
         Paginate through API results.
-        
+
         Yields items one at a time, handling pagination internally.
-        
+
         Args:
             endpoint: API endpoint
             params: Query parameters
             page_size: Items per page
-            
+
         Yields:
             Individual items from paginated results
         """
         params = params or {}
         params['limit'] = page_size
         params['offset'] = 0
-        
+
         while True:
             # Pass a copy of params so captured call args reflect
             # the offset at the time of the request (useful for tests)
             response = self._make_request_with_retry(endpoint, dict(params))
-            
+
             if not response or 'data' not in response:
                 break
-            
+
             data = response['data']
-            
+
             # No more data
             if not data or len(data) == 0:
                 break
-            
+
             # Yield each item
-            for item in data:
-                yield item
-            
+            yield from data
+
             # If we got less than a full page:
             if len(data) < page_size:
                 # For subsequent pages (offset > 0), some clients perform
@@ -288,78 +283,78 @@ class LightspeedGateway:
 
             # Move to next page for full pages
             params['offset'] += page_size
-    
-    def get_products(self, include_variants: bool = False) -> List[Dict[str, Any]]:
+
+    def get_products(self, include_variants: bool = False) -> list[dict[str, Any]]:
         """
         Get all products.
-        
+
         Args:
             include_variants: Whether to fetch variants for each product
-            
+
         Returns:
             List of product dictionaries
         """
         products = []
-        
+
         for product in self._paginate('products'):
             if include_variants:
                 # Fetch variants for this product
                 variants = list(self._paginate(f"products/{product['id']}/variants"))
                 product['variants'] = variants
-            
+
             products.append(product)
-        
+
         return products
-    
-    def get_product_by_id(self, product_id: str) -> Optional[Dict[str, Any]]:
+
+    def get_product_by_id(self, product_id: str) -> dict[str, Any] | None:
         """
         Get a single product by ID.
-        
+
         Args:
             product_id: Product ID
-            
+
         Returns:
             Product dictionary or None if not found
         """
         return self._make_request_with_retry(f"products/{product_id}")
-    
+
     def get_inventory(
         self,
-        location_id: Optional[str] = None,
-    ) -> List[Dict[str, Any]]:
+        location_id: str | None = None,
+    ) -> list[dict[str, Any]]:
         """
         Get inventory levels.
-        
+
         Args:
             location_id: Optional location filter
-            
+
         Returns:
             List of inventory items
         """
         params = {}
         if location_id:
             params['location_id'] = location_id
-        
+
         return list(self._paginate('inventory', params))
 
-    def get_inventory_by_product(self, product_id: str) -> List[Dict[str, Any]]:
+    def get_inventory_by_product(self, product_id: str) -> list[dict[str, Any]]:
         """Get inventory entries for a given product (demo mode reads from fixture)."""
         items = self.get_inventory()
         # In real API, we'd filter by product/variant. Fixtures are minimal; return all.
         return items
-    
+
     def get_sales(
         self,
-        from_date: Optional[str] = None,
-        to_date: Optional[str] = None,
-    ) -> List[Dict[str, Any]]:
+        from_date: str | None = None,
+        to_date: str | None = None,
+    ) -> list[dict[str, Any]]:
         """
         Get sales data.
-        
+
         Args:
             from_date: Start date (YYYY-MM-DD)
             to_date: End date (YYYY-MM-DD)
-            
+
         Returns:
             List of sales
         """
@@ -368,36 +363,36 @@ class LightspeedGateway:
             params['date_from'] = from_date
         if to_date:
             params['date_to'] = to_date
-        
+
         return list(self._paginate('sales', params))
-    
+
     def iter_products(
         self,
         page_size: int = 250,
-    ) -> Generator[Dict[str, Any], None, None]:
+    ) -> Generator[dict[str, Any], None, None]:
         """
         Iterate through products with normalized fields.
-        
+
         This adapter method translates Lightspeed's format to domain model.
-        
+
         Args:
             page_size: Items per page
-            
+
         Yields:
             Normalized product dictionaries
         """
         for product in self._paginate('products', page_size=page_size):
             yield self._normalize_product(product)
-    
-    def _normalize_product(self, raw_product: Dict[str, Any]) -> Dict[str, Any]:
+
+    def _normalize_product(self, raw_product: dict[str, Any]) -> dict[str, Any]:
         """
         Normalize product data from Lightspeed format to domain format.
-        
+
         Adapter pattern: translate external API format to internal domain model.
-        
+
         Args:
             raw_product: Raw product data from Lightspeed API
-            
+
         Returns:
             Normalized product dictionary with standardized field names
         """
@@ -412,14 +407,14 @@ class LightspeedGateway:
             # Include variants if present
             'variants': raw_product.get('variants', []),
         }
-    
-    def _normalize_inventory(self, raw_inventory: Dict[str, Any]) -> Dict[str, Any]:
+
+    def _normalize_inventory(self, raw_inventory: dict[str, Any]) -> dict[str, Any]:
         """
         Normalize inventory data to domain format.
-        
+
         Args:
             raw_inventory: Raw inventory data from API
-            
+
         Returns:
             Normalized inventory dictionary
         """
@@ -430,14 +425,14 @@ class LightspeedGateway:
             'quantity_sold': int(raw_inventory.get('quantity_sold', 0)),
             'last_updated': raw_inventory.get('last_updated'),
         }
-    
-    def _normalize_sale(self, raw_sale: Dict[str, Any]) -> Dict[str, Any]:
+
+    def _normalize_sale(self, raw_sale: dict[str, Any]) -> dict[str, Any]:
         """
         Normalize sale data to domain format.
-        
+
         Args:
             raw_sale: Raw sale data from API
-            
+
         Returns:
             Normalized sale dictionary
         """
@@ -448,11 +443,11 @@ class LightspeedGateway:
             'location_id': raw_sale.get('location_id'),
             'items': raw_sale.get('items', []),
         }
-    
+
     def __enter__(self) -> 'LightspeedGateway':
         """Context manager entry."""
         return self
-    
+
     def __exit__(self, exc_type: Any, exc_val: Any, exc_tb: Any) -> None:
         """Context manager exit - close session."""
         self.session.close()

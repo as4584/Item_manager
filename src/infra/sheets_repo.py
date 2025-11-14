@@ -4,17 +4,16 @@ Implements read/write, basic retry, caching, and a simple Unit of Work.
 """
 from __future__ import annotations
 
+import contextlib
 from dataclasses import dataclass
-from typing import Any, Dict, List, Optional, Tuple
 from datetime import datetime, timedelta
-
-import pandas as pd
+from typing import Any
 
 # Import via services.sheets re-exports so tests can patch
 import gspread  # type: ignore
+import pandas as pd
 
-from .exceptions import WorksheetNotFoundError, QuotaExceededError
-
+from .exceptions import QuotaExceededError, WorksheetNotFoundError
 
 INVENTORY_WS = "Inventory"
 CONFIG_WS = "Config"
@@ -42,7 +41,7 @@ class SheetsRepository:
         self._spreadsheet = None
 
         # simple cache: {key: (expires_at, value)}
-        self._cache: Dict[str, Tuple[datetime, pd.DataFrame]] = {}
+        self._cache: dict[str, tuple[datetime, pd.DataFrame]] = {}
 
     # --------------- helpers ---------------
     def _ensure_client(self) -> None:
@@ -62,7 +61,7 @@ class SheetsRepository:
             raise
 
     def _retry_call(self, func, *args, **kwargs):
-        last_exc: Optional[Exception] = None
+        last_exc: Exception | None = None
         for attempt in range(self.max_retries):
             try:
                 return func(*args, **kwargs)
@@ -78,7 +77,7 @@ class SheetsRepository:
             raise last_exc
 
     # --------------- transforms ---------------
-    def _sheets_to_dataframe(self, records: List[Dict[str, Any]]) -> pd.DataFrame:
+    def _sheets_to_dataframe(self, records: list[dict[str, Any]]) -> pd.DataFrame:
         df = pd.DataFrame(records)
         # Attempt rudimentary type conversions
         for col in df.columns:
@@ -89,7 +88,7 @@ class SheetsRepository:
                 df[col] = pd.to_numeric(df[col], errors='coerce').astype(float)
         return df
 
-    def _dataframe_to_sheets(self, df: pd.DataFrame) -> List[List[Any]]:
+    def _dataframe_to_sheets(self, df: pd.DataFrame) -> list[list[Any]]:
         def cast(v: Any) -> Any:
             if isinstance(v, (pd.Timestamp, datetime)):
                 return v.strftime('%Y-%m-%d %H:%M:%S')
@@ -110,18 +109,16 @@ class SheetsRepository:
             self._cache[cache_key] = (datetime.utcnow() + timedelta(seconds=self.cache_ttl), df.copy())
         return df
 
-    def get_config(self) -> Dict[str, int]:
+    def get_config(self) -> dict[str, int]:
         ws = self._worksheet(CONFIG_WS)
         records = self._retry_call(ws.get_all_records)
-        config: Dict[str, int] = {}
+        config: dict[str, int] = {}
         for row in records:
             k = row.get('Setting')
             v = row.get('Value')
             if k is not None and v is not None:
-                try:
+                with contextlib.suppress(Exception):
                     config[str(k)] = int(v)
-                except Exception:
-                    pass
         return config
 
     def get_sales_log(self) -> pd.DataFrame:
@@ -175,7 +172,7 @@ class SheetsUnitOfWork:
         self.sales_log = _SalesLogWriter(repo)
         self._committed = False
 
-    def __enter__(self) -> "SheetsUnitOfWork":
+    def __enter__(self) -> SheetsUnitOfWork:
         return self
 
     def __exit__(self, exc_type, exc, tb) -> None:

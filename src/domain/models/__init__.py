@@ -9,8 +9,8 @@ class Product:
 	name: str
 	qty_on_hand: int = 0
 	qty_sold: int = 0
-	category: Optional[str] = None
-	retail_price: Optional[float] = None
+	category: str | None = None
+	retail_price: float | None = None
 
 
 @dataclass
@@ -18,5 +18,5 @@ class Sale:
 	sku: str
 	quantity: int
 	date: datetime
-	unit_price: Optional[float] = None
-	sale_hash: Optional[str] = None
+	unit_price: float | None = None
+	sale_hash: str | None = None
