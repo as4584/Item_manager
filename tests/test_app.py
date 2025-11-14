@@ -33,7 +33,7 @@ class TestFlaskRoutes:
 
     def test_sync_endpoint_post(self, client):
         """Test manual sync endpoint."""
-        with patch('services.ls_api.LightspeedAPI') as mock_api_class:
+        with patch('services.lightspeed.api.LightspeedAPI') as mock_api_class:
             mock_api = Mock()
             mock_api.sync_from_ls.return_value = {'success': True}
             mock_api_class.return_value = mock_api
@@ -113,7 +113,7 @@ class TestErrorHandling:
 
     def test_sync_endpoint_handles_exceptions(self, client):
         """Test that sync endpoint handles exceptions gracefully."""
-        with patch('services.ls_api.LightspeedAPI') as mock_api_class:
+        with patch('services.lightspeed.api.LightspeedAPI') as mock_api_class:
             mock_api_class.side_effect = Exception("API Error")
 
             response = client.post('/sync')

@@ -132,8 +132,8 @@ def create_app() -> Flask:
 	@app.route('/sync', methods=['POST'])
 	def sync():
 		try:
-			# Legacy import path expected by tests
-			from services.ls_api import LightspeedAPI  # type: ignore
+			# Import from correct module path
+			from services.lightspeed.api import LightspeedAPI  # type: ignore
 
 			api = LightspeedAPI()
 			result = api.sync_from_ls()
