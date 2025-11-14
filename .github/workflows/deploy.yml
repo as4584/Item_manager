@@ -1,0 +1,74 @@
+name: Deploy Inventory Manager
+
+on:
+  push:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+
+    - name: Install Poetry
+      run: |
+        curl -sSL https://install.python-poetry.org | python3 -
+        echo "$HOME/.local/bin" >> $GITHUB_PATH
+
+    - name: Install dependencies
+      run: |
+        poetry config virtualenvs.create false
+        poetry install
+
+    - name: Run syntax check
+      run: |
+        python -m py_compile src/**/*.py
+
+    - name: Run security scan
+      run: |
+        pip install bandit safety
+        bandit -r src/ -f json -o bandit-report.json || true
+        safety check --json --output safety-report.json || true
+
+    - name: Run tests
+      run: |
+        poetry run pytest tests/ -v
+
+    - name: Run linting
+      run: |
+        pip install ruff
+        ruff check src/
+
+    - name: Docker build validation
+      run: |
+        docker build -t inventory-manager-test .
+
+  deploy:
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Deploy to production server
+      uses: appleboy/ssh-action@v1.0.0
+      with:
+        host: ${{ secrets.HOST_IP }}
+        username: ${{ secrets.SSH_USERNAME }}
+        key: ${{ secrets.SSH_KEY }}
+        script: |
+          cd /srv/inventory_manager
+          git pull origin main
+          docker compose down
+          docker compose up -d --build
+          sudo systemctl restart inventory_manager.service
+          sudo systemctl reload nginx

@@ -1,0 +1,21 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    restart: always
+    ports:
+      - "8010:8010"
+    environment:
+      - FLASK_ENV=production
+      - PORT=8010
+      - DEMO_MODE=false
+    volumes:
+      - ./config:/app/config:ro
+      - ./logs:/app/logs
+    networks:
+      - inventory_network
+
+networks:
+  inventory_network:
+    driver: bridge

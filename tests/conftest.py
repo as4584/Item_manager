@@ -1,12 +1,13 @@
 """
 Test configuration and fixtures for inventory manager tests.
 """
-import pytest
-import time
-import pandas as pd
-from datetime import datetime
 import os
 import sys
+import time
+from datetime import datetime
+
+import pandas as pd
+import pytest
 
 # Add the project root to the Python path
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -96,7 +97,7 @@ def sample_sales_data():
 def mock_sheets_service():
     """Mock Google Sheets service for testing."""
     from unittest.mock import Mock
-    
+
     mock_service = Mock()
     mock_service.get_config.return_value = {'LowStockThreshold': 5}
     mock_service.get_inventory_data.return_value = pd.DataFrame()
@@ -104,7 +105,7 @@ def mock_sheets_service():
     mock_service.get_sales_log.return_value = pd.DataFrame()
     mock_service.add_sales_log_entry.return_value = True
     mock_service.update_restock_list.return_value = True
-    
+
     return mock_service
 
 
@@ -112,7 +113,7 @@ def mock_sheets_service():
 def mock_lightspeed_api():
     """Mock Lightspeed API service for testing."""
     from unittest.mock import Mock
-    
+
     mock_api = Mock()
     mock_api.get_products.return_value = []
     mock_api.get_sales.return_value = []
@@ -122,7 +123,7 @@ def mock_lightspeed_api():
         'recent_sales': 0,
         'sync_time': datetime.now().isoformat()
     }
-    
+
     return mock_api
 
 
@@ -131,13 +132,12 @@ def app():
     """Create Flask app for testing."""
     import os
     os.environ['FLASK_ENV'] = 'testing'
-    
+
     from app import app
     app.config['TESTING'] = True
-    
-    with app.test_client() as client:
-        with app.app_context():
-            yield app
+
+    with app.test_client(), app.app_context():
+        yield app
 
 
 @pytest.fixture
