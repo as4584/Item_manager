@@ -87,7 +87,7 @@ jobs:
     
     - name: Upload test results
       if: always()
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v5
       with:
         name: test-results
         path: |
@@ -151,7 +151,7 @@ jobs:
       continue-on-error: true
     
     - name: Upload coverage reports
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v5
       with:
         name: coverage-reports
         path: |
@@ -218,7 +218,7 @@ jobs:
     
     - name: Upload quality report
       if: always()
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v5
       with:
         name: quality-report
         path: quality-report.md
