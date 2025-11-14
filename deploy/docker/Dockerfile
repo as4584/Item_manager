@@ -31,7 +31,6 @@ ENV PYTHONPATH=/app/src
 # Set environment variables for production
 ENV FLASK_ENV=production
 ENV PORT=8010
-ENV DEMO_MODE=false
 
 # Create non-root user
 RUN useradd --create-home --shell /bin/bash app && chown -R app:app /app

@@ -60,9 +60,9 @@ lint-fix: ## Run ruff with auto-fix
 	$(POETRY_RUN) ruff check --fix $(SRC_DIR) $(TEST_DIR)
 	@echo "✓ Auto-fixes applied"
 
-test: ## Fast tests
-	@echo "Running fast tests (Demo Mode)..."
-	DEMO_MODE=true PYTEST_RUNNING=1 $(POETRY_RUN) pytest -q -x -n auto --maxfail=1
+test: ## Run fast tests
+	@echo "Running fast tests..."
+	PYTEST_RUNNING=1 $(POETRY_RUN) pytest -q -x -n auto --maxfail=1
 	@echo "✓ Tests complete"
 
 test-cov: ## Run tests with coverage report
@@ -79,8 +79,8 @@ security: ## Run security checks with bandit
 	$(POETRY_RUN) bandit -r $(SRC_DIR) -c pyproject.toml
 	@echo "✓ Security checks complete"
 
-run: ## Run Flask in demo mode on 8000
-	DEMO_MODE=true $(POETRY_RUN) python -m flask --app src.app:create_app run --port 8000
+run: ## Run Flask application on port 8000
+	$(POETRY_RUN) python -m flask --app src.app:create_app run --port 8000
 
 run-dev: ## Run the application in development mode
 	@echo "Starting inventory sync application (dev mode)..."

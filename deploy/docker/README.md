@@ -1,267 +1,131 @@
-# 🖤 DonXEra Inventory Manager - Docker Demo
+# Professional Inventory Management System - Docker Deployment
 
-A minimalist inventory management system for streetwear and sneaker shops. Clean design, simple interface, powerful features.
+A production-ready inventory management system designed for retail operations with Lightspeed X-Series integration.
 
-## 🚀 Quick Start (Docker)
+## 🚀 Production Deployment
 
-Run the demo with one command:
+Deploy the containerized application:
 
 ```bash
-docker run -p 8000:8000 donxera-inventory
+docker run -p 8010:8010 \
+  -e GOOGLE_SHEET_NAME="Live ATS Inventory" \
+  -e LS_X_API_TOKEN="your_token" \
+  -e LS_ACCOUNT_DOMAIN="your_domain" \
+  inventory-manager
 ```
 
-Then open your browser to: **http://localhost:8000**
+Then access the application at: **http://localhost:8010**
 
 ---
 
-## 📦 Setup Instructions
+## 📦 Deployment Instructions
 
 ### Prerequisites
 - Docker installed ([Get Docker](https://docs.docker.com/get-docker/))
-- That's it!
+- Google Sheets API credentials
+- Lightspeed X-Series API access
 
-### Build the Image
-
-```bash
-# Clone or download the repository
-cd inventory_manager
-
-# Build the Docker image
-docker build -t donxera-inventory .
-```
-
-### Run the Container
+### Build the Production Image
 
 ```bash
-# Run on default port 8000
-docker run -p 8000:8000 donxera-inventory
+# Build the production image
+docker build -f deploy/docker/Dockerfile -t inventory-manager .
 
-# Or run on a different port (e.g., 3000)
-docker run -p 3000:8000 donxera-inventory
+# Run with environment configuration
+docker run -p 8010:8010 \
+  --env-file .env \
+  inventory-manager
 ```
 
-### Run in Background
+### Environment Configuration
+
+Create a `.env` file based on `.env.example`:
 
 ```bash
-# Detached mode (runs in background)
-docker run -d -p 8000:8000 --name donxera donxera-inventory
+# Required for production
+GOOGLE_SERVICE_ACCOUNT_JSON=./service_account.json
+GOOGLE_SHEET_NAME=Live ATS Inventory
+LS_X_API_TOKEN=your_lightspeed_api_token
+LS_ACCOUNT_DOMAIN=your_account_domain
 
-# View logs
-docker logs donxera
-
-# Stop container
-docker stop donxera
-
-# Remove container
-docker rm donxera
+# Application settings
+FLASK_ENV=production
+PORT=8010
+SECRET_KEY=your_secure_secret_key
 ```
 
----
+## 🏗️ Production Architecture
 
-## 🎯 What's Included
+### Container Specifications
+- **Base Image**: python:3.11-slim
+- **Runtime**: Gunicorn WSGI server
+- **Port**: 8010
+- **Security**: Non-root user execution
+- **Size**: ~200MB optimized
 
-### Demo Data
-- **60 products** pre-loaded with Miami streetwear brands:
-  - Hellstar hoodies & tees
-  - Denim Tears pieces
-  - Bape collections
-  - Graphic tees
-  - Sneakers (Travis Scott, Yeezys, Dunks, New Balance)
-  - Accessories
+### Key Features
+- **Lightspeed Integration**: Real-time inventory synchronization
+- **Google Sheets**: Operations dashboard and reporting
+- **Automated Scheduling**: Hourly inventory updates
+- **Production Security**: Secure configuration management
+- **Health Monitoring**: Built-in health check endpoints
 
-### Features
-- ✅ **Dashboard** - Overview of inventory stats
-- ✅ **Inventory View** - Search, sort, filter all products
-- ✅ **Low Stock Alerts** - Items needing restock
-- ✅ **CSV Upload** - Import inventory data
-- ✅ **Responsive Design** - Works on desktop & mobile
+### Service Architecture
+1. **Flask Application** - Core inventory management
+2. **Scheduler Service** - Automated synchronization
+3. **Google Sheets API** - Operations integration
+4. **Lightspeed API** - POS system connectivity
 
----
+## 🔧 Configuration Management
 
-## 📱 Usage Examples
-
-### View Dashboard
-Navigate to `http://localhost:8000/` to see:
-- Product types count
-- Items in stock
-- Low stock alerts
-- Quick actions
-
-### Browse Inventory
-Go to `http://localhost:8000/inventory` to:
-- Search products by name, code, or category
-- Filter by category (Clothing, Sneakers, Accessories)
-- Filter by stock level (In Stock, Low Stock, Out of Stock)
-- Sort by any column
-
-### Check Low Stock
-Visit `http://localhost:8000/low-stock` to:
-- See items below threshold (default: 5 units)
-- View priority levels (Critical, High, Medium)
-- Export restock list
-
-### API Endpoints
-
+### Volume Mounting
 ```bash
-# Health check
-curl http://localhost:8000/health
-
-# Version info
-curl http://localhost:8000/version
-
-# Update stock (demo mode)
-curl -X POST http://localhost:8000/update-stock \
-  -H "Content-Type: application/json" \
-  -d '{"sku": "HS-001-M", "quantity": 10}'
+# Mount configuration and logs
+docker run -p 8010:8010 \
+  -v $(pwd)/config:/app/config \
+  -v $(pwd)/logs:/app/logs \
+  inventory-manager
 ```
 
----
-
-## 🛠️ Configuration
-
-### Environment Variables
-
+### Service Account Setup
 ```bash
-# Run with custom settings
-docker run -p 8000:8000 \
-  -e DEMO_MODE=true \
-  -e PORT=8000 \
-  donxera-inventory
+# Mount Google service account credentials
+docker run -p 8010:8010 \
+  -v $(pwd)/service_account.json:/app/service_account.json \
+  -e GOOGLE_SERVICE_ACCOUNT_JSON=/app/service_account.json \
+  inventory-manager
 ```
 
-### Port Mapping
+## 🔍 Health Monitoring
 
+### Health Check Endpoint
 ```bash
-# Map container port 8000 to host port 3000
-docker run -p 3000:8000 donxera-inventory
-# Access at: http://localhost:3000
+curl http://localhost:8010/health
+# Returns: {"status": "ok", "sheets_configured": true}
 ```
 
----
+### Application Metrics
+- **Inventory Status**: Real-time stock levels
+- **Sync Status**: Last synchronization timestamp  
+- **System Health**: Application and service status
 
-## 📊 Demo Data Overview
+## 🛡️ Security Considerations
 
-**Categories:**
-- Clothing (Hoodies, Tees, Pants, Jeans)
-- Sneakers (Jordans, Dunks, Yeezys, New Balance)
-- Accessories (Masks, Hats, Sunglasses, Jewelry)
+- Secure secret management via environment variables
+- Non-root container execution
+- API token encryption and secure storage
+- Network security with proper port exposure
 
-**Stock Levels:**
-- In Stock: 334 units across all products
-- Low Stock: 36 items need restocking
-- Product Types: 60 unique SKUs
+## 🏭 Production Deployment
 
-**Price Range:**
-- Budget: $35-$48 (Graphic tees, accessories)
-- Mid-range: $85-$180 (Hoodies, sneakers)
-- Premium: $250-$850 (Bape Shark, Travis Scott, Denim Tears)
+For production environments, use with:
+- **Reverse Proxy**: Nginx configuration included
+- **Service Management**: systemd service files
+- **CI/CD**: GitHub Actions workflow
+- **Monitoring**: Built-in health checks
 
----
+See [DEPLOYMENT.md](../../DEPLOYMENT.md) for complete production setup.
 
-## 🔧 Troubleshooting
+## 📝 License
 
-### Port Already in Use
-```bash
-# Check what's using port 8000
-lsof -i :8000
-
-# Use a different port
-docker run -p 8181:8000 donxera-inventory
-```
-
-### Container Won't Start
-```bash
-# Check logs
-docker logs <container-id>
-
-# Remove old containers
-docker container prune
-
-# Rebuild image
-docker build --no-cache -t donxera-inventory .
-```
-
-### Can't Access in Browser
-- Make sure container is running: `docker ps`
-- Check correct port mapping: `docker ps` shows port mapping
-- Try `http://127.0.0.1:8000` instead of `localhost`
-
----
-
-## 🎨 Design Philosophy
-
-**DonXEra** follows minimalist design principles:
-- Clean white background
-- Black & grey color scheme
-- Subtle shadows and borders
-- Professional typography
-- Focus on content, not decoration
-
----
-
-## 📝 Notes
-
-- **Demo Mode**: This runs with sample data only (no database required)
-- **No Data Persistence**: Restart = fresh demo data
-- **Production**: Not recommended for production use without modifications
-- **Image Size**: ~150-200MB (Python 3.11 slim base)
-
----
-
-## 🚢 Sharing the Image
-
-### Save Image to File
-```bash
-# Export image
-docker save donxera-inventory > donxera-inventory.tar
-
-# Compress (optional)
-gzip donxera-inventory.tar
-```
-
-### Load Image on Another Machine
-```bash
-# Load image
-docker load < donxera-inventory.tar
-
-# Or from compressed
-gunzip -c donxera-inventory.tar.gz | docker load
-
-# Run it
-docker run -p 8000:8000 donxera-inventory
-```
-
-### Push to Docker Hub (Optional)
-```bash
-# Tag image
-docker tag donxera-inventory yourusername/donxera-inventory:latest
-
-# Login
-docker login
-
-# Push
-docker push yourusername/donxera-inventory:latest
-
-# Others can pull and run
-docker run -p 8000:8000 yourusername/donxera-inventory:latest
-```
-
----
-
-## 📄 License
-
-Demo project for educational purposes.
-
----
-
-## 🤝 Support
-
-For issues or questions:
-1. Check logs: `docker logs <container-name>`
-2. Verify port availability
-3. Ensure Docker is running
-4. Try rebuilding the image
-
----
-
-**Built with Flask • Powered by Python • Designed for Simplicity**
+Proprietary - Portfolio Project

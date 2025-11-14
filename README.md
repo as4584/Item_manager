@@ -1,14 +1,18 @@
-# Inventory Manager
+# Professional Inventory Management System
 
-A self-managing inventory system for sneaker/clothing shops with Lightspeed X-Series integration.
+A production-ready inventory management system for retail operations, featuring Lightspeed X-Series integration and Google Sheets synchronization.
 
-## Features
+## Overview
+
+This system was designed as a comprehensive solution for modern retail inventory management, showcasing enterprise-level architecture and development practices.
+
+## Key Features
 
 - **POS Integration**: Lightspeed Retail X-Series API
-- **Operations Dashboard**: Google Sheets integration
-- **Automated Sync**: Hourly inventory synchronization
-- **Demo Mode**: Full functionality without external dependencies
-- **Production Ready**: Docker + systemd + Nginx deployment
+- **Operations Dashboard**: Google Sheets integration for operations teams
+- **Automated Synchronization**: Scheduled inventory updates
+- **Production Architecture**: Docker containerization with systemd services
+- **CI/CD Pipeline**: Automated testing and deployment via GitHub Actions
 
 ## Quick Start
 
@@ -17,8 +21,8 @@ A self-managing inventory system for sneaker/clothing shops with Lightspeed X-Se
 # Install dependencies
 poetry install
 
-# Run in demo mode
-DEMO_MODE=true poetry run python scripts/run_local.py
+# Run development server
+poetry run python scripts/run_local.py
 ```
 
 ### Production Deployment
@@ -26,33 +30,41 @@ See [DEPLOYMENT.md](DEPLOYMENT.md) for complete production setup instructions.
 
 ## Architecture
 
-This project follows a standardized architecture template with:
-- Port 8010 (inventory manager project)
+This project follows enterprise software architecture patterns:
+- Modular service-oriented design
+- Port 8010 (standardized project port)
 - Docker containerization
 - systemd service management
-- Nginx reverse proxy
-- GitHub Actions CI/CD
+- Nginx reverse proxy configuration
+- Comprehensive GitHub Actions CI/CD
 
-## Testing
+## Testing & Quality Assurance
 
 ```bash
-# Run tests
+# Run complete test suite
 poetry run pytest
 
-# Run with coverage
+# Generate coverage reports
 poetry run pytest --cov=src
 
-# Lint code
+# Code quality checks
 ruff check src/ tests/
 ```
 
-## Environment Variables
+## Configuration
 
-- `DEMO_MODE`: Enable demo mode (true/false)
 - `GOOGLE_SHEET_NAME`: Google Sheets spreadsheet name
-- `LS_X_API_TOKEN`: Lightspeed X-Series API token
+- `LS_X_API_TOKEN`: Lightspeed X-Series API token  
 - `LS_ACCOUNT_DOMAIN`: Lightspeed account domain
+
+## Technology Stack
+
+- **Backend**: Python 3.11, Flask
+- **Data Processing**: Pandas, APScheduler
+- **APIs**: Lightspeed X-Series, Google Sheets (gspread)
+- **Infrastructure**: Docker, Nginx, systemd
+- **CI/CD**: GitHub Actions with security scanning
 
 ## License
 
-Proprietary - DonXEra Team
+Proprietary - Portfolio Project

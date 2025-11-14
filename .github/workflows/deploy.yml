@@ -2,7 +2,7 @@ name: Deploy Inventory Manager
 
 on:
   push:
-    branches: [ main, master, feat/demo-mode ]
+    branches: [ main, master ]
   workflow_dispatch:
 
 jobs:

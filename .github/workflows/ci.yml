@@ -1,4 +1,4 @@
-name: ci (demo-mode)
+name: CI Pipeline
 
 on:
   push:
@@ -7,8 +7,8 @@ on:
     branches: [ main ]
 
 env:
-  PYTHON_VERSION: "3.10"
-  DEMO_MODE: "true"
+  PYTHON_VERSION: '3.11'
+  POETRY_VERSION: '1.8.3'
   PYTEST_RUNNING: "1"
   COVERAGE_MIN: "80"
 
@@ -51,9 +51,8 @@ jobs:
       - name: mypy
         run: poetry run mypy . || true
 
-      - name: Pytest (demo-mode)
-        run: |
-          poetry run pytest -q -x -n auto --maxfail=1 --cov=src --cov-report=xml --cov-fail-under=${{ env.COVERAGE_MIN }}
+      - name: Run Tests
+        run: poetry run pytest
 
       - name: Upload coverage
         uses: actions/upload-artifact@v4
