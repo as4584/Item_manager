@@ -37,7 +37,7 @@ apscheduler = "^3.10.4"
 pytz = "^2023.3"
 
 # Security
-cryptography = ">=41.0.0,<44.0.0"
+cryptography = ">=41.0.0,<47.0.0"
 
 # Utilities
 chardet = "^5.2.0"
